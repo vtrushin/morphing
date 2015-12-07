@@ -1,0 +1,52 @@
+doctype html
+
+html
+
+	head
+		meta(charset = "utf-8")
+		link(rel = "stylesheet", href = "styles/1.css")
+		//script(src = "../keyframe-js/keyframe.js")
+		script(src = "../ramjet.js")
+
+		//script(src = "../parse-css.js")
+		style.
+			.hidden {
+				visibility: hidden;
+			}
+
+	body
+
+		div
+			ul.list
+				li
+					.title Пункт 1
+					.author
+						span Кто-то
+					.star 3 голоса
+				li
+					.title
+						span Пункт 2
+					.author
+						span Слотер
+					.star 5 голосов
+				li
+					.title Пункт 3
+					.author
+						span Зорро
+					.star 2 голоса
+
+		div.view.hidden
+			.header
+				.title
+					span Пункт 2
+				.author
+					span Слотер
+			.activity
+				span 5 голосов
+			.content Сумма ряда позиционирует интеграл Пуассона, таким образом сбылась мечта идиота - утверждение полностью доказано. Отсюда естественно следует, что прямоугольная матрица в принципе отображает интеграл по бесконечной области. Скалярное произведение в принципе притягивает равновероятный Наибольший Общий Делитель (НОД). Линейное уравнение нетривиально.
+
+
+		button#start Старт
+
+
+		script(src = "js/index.js")

@@ -1,0 +1,23 @@
+{
+  "name": "morphing",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Vlad Trushin <monospectr@mail.ru>"
+  ],
+  "license": "ISC",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/js/lib/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "keyframe-js": "~0.1.1",
+    "web-animations-js": "https://github.com/web-animations/web-animations-js.git"
+  }
+}

@@ -1,0 +1,83 @@
+body {
+	font-family: Helvetica, Arial;
+}
+
+.morph-container,
+.morph-container * {
+	pointer-events: none !important;
+}
+
+.b-user-img-n-name {
+	position: relative;
+	cursor: pointer;
+}
+
+.b-user-img-n-name img {
+	width: 25px;
+	height: 25px;
+	position: absolute;
+	top: 50%;
+	margin-top: -12px;
+	border-radius: 50%;
+}
+
+.b-user-img-n-name .name {
+	margin-left: 30px;
+	font-weight: bold;
+}
+
+
+.b-user-modal {
+	width: 500px;
+	position: absolute;
+	top: 20px;
+	left: 50%;
+	margin-left: -250px;
+	box-shadow: 0 20px 200px rgba(0, 0, 0, .4);
+}
+
+.b-user-modal__header {
+	background-color: #00afd5;
+	padding: 20px;
+}
+
+.b-user-modal__body {
+	padding: 20px;
+	border-left: 1px solid #dadada;
+	border-right: 1px solid #dadada;
+	border-bottom: 1px solid #dadada;
+}
+
+.b-user-modal__btn-close {
+	width: 14px;
+	height: 14px;
+	margin: 0;
+	padding: 0;
+	background: transparent url(imgs/icon-close.svg);
+	background-size: cover;
+	border: none;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+	outline: none;
+}
+
+.b-user-modal__user-img-n-name {
+	display: inline-flex;
+	align-items: center;
+}
+
+.b-user-modal__user-img-n-name .image {
+	margin-right: 20px;
+}
+
+.b-user-modal__user-img-n-name .image img {
+	vertical-align: bottom;
+}
+
+.b-user-modal__user-img-n-name .name {
+	font-size: 26px;
+	color: white;
+}
+

@@ -1,0 +1,44 @@
+doctype html
+html
+	head
+		meta(charset = "utf-8")
+		link(rel = "stylesheet", href = "1.css")
+	body
+
+		.container
+			.left
+				.from
+					ul
+						li 123
+						li 132
+						li.opened
+							.title
+								span.js-title Заголовок
+								ins.js-count 5
+
+
+			.right
+				.to
+					.header
+						.title
+							span.js-title З а г о л о в о к
+						.count
+							span.js-count 5
+
+
+	script(src = "../js/convert.js")
+	script.
+
+		window.addEventListener('load', function(){
+			var fromEl = document.querySelector('.from');
+			var toEl = document.querySelector('.to');
+
+			var morph = new Morph(fromEl, toEl, {
+				specialElConfigs: [
+					{ fromEl: '.js-title', toEl: '.js-title' },
+					{ fromEl: '.js-count', toEl: '.js-count' }
+				]
+			});
+
+			morph.animate();
+		});

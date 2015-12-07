@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+	<title>Example #1</title>
+	<link rel="stylesheet" href="main.css" />
+	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
+	<script src="../../dist/js/convert.js"></script>
+	<style>
+		.g-hidden {
+			visibility: hidden !important;
+		}
+	</style>
+</head>
+<body>
+
+
+<div class="b-messenger">
+	<div class="b-messenger__list">
+
+		<div class="b-message _out">
+			<span>
+				<i></i>
+				<b>
+					Однажды, в студеную зимнюю пору
+					Я из лесу вышел; был сильный мороз.
+					Гляжу, поднимается медленно в гору
+					Лошадка, везущая хворосту воз.
+					И шествуя важно, в спокойствии чинном,
+					Лошадку ведет под уздцы мужичок
+				</b>
+			</span>
+		</div>
+
+		<div class="b-message _out">
+			<span>
+				<i></i>
+				<b>Короткий текст</b>
+			</span>
+		</div>
+
+	</div>
+	<div class="b-messenger__new-message">
+		<div class="text"><textarea rows="4" placeholder="Текст"></textarea></div>
+		<button>Отправить</button>
+	</div>
+</div>
+
+
+<script>
+	window.addEventListener('load', function() {
+		var messenger = document.querySelector('.b-messenger');
+		var list = messenger.querySelector('.b-messenger__list');
+		var textAreaCover = messenger.querySelector('.b-messenger__new-message .text');
+		var textArea = textAreaCover.querySelector('textarea');
+		var submit = messenger.querySelector('button');
+
+		submit.addEventListener('click', function(){
+			var messageEl = document.createElement('div');
+			messageEl.className = 'b-message _out';
+
+			var messageBody = document.createElement('span');
+			messageBody.className = 'g-hidden';
+			messageBody.innerHTML = '<i></i><b>' + textArea.value + '</b>';
+
+			messageEl.appendChild(messageBody);
+			list.appendChild(messageEl);
+
+			list.scrollTop = list.scrollHeight;
+
+			var morph = new Morph({
+				fromObj: {
+					el: textArea,
+					classHidden: 'g-hidden'
+				},
+				toObj: {
+					el: messageBody,
+					classHidden: 'g-hidden'
+				},
+				animationTime: 500/*,
+				animationEasing: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)'*/
+			});
+
+			textArea.value = '';
+
+			morph.animate(function(){
+				morph.removeAnimationLayer();
+			});
+		});
+	});
+</script>
+
+</body>
+</html>

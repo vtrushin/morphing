@@ -1,0 +1,156 @@
+body {
+	font-family: Helvetica, Arial;
+}
+
+
+.button-back,
+.button-menu {
+	border: none;
+	background-color: transparent;
+	margin: 0;
+	padding: 0;
+}
+
+.button-back {
+	background: url(imgs/icon-back.svg) center center no-repeat;
+	width: 19px;
+	height: 16px;
+}
+
+.button-menu {
+	background: url(imgs/icon-menu.svg) center center no-repeat;
+	width: 18px;
+	height: 16px;
+}
+
+
+.example {
+	display: flex;
+	flex-direction: column;
+	width: 320px;
+	height: 568px;
+	box-sizing: border-box;
+	border: 1px solid red;
+}
+
+.example .header {
+	position: relative;
+	background-color: #33b5cf;
+}
+
+
+/* short */
+.example .header__short {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	align-content: space-between;
+
+	padding: 5px 15px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.example .header__short .button-back {
+}
+
+.example .header__short .__user-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.example .header__short .__name-n-avatar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 2px;
+}
+
+.example .header__short .__name-n-avatar .__image {
+	border-radius: 50%;
+	margin-right: 10px;
+}
+
+.example .header__short .__name-n-avatar .__name {
+	color: #fff;
+	font-weight: normal;
+
+}
+
+.example .header__short .__status {
+	font-weight: 300;
+	font-size: 12px;
+	color: #c1e1e5;
+}
+
+
+.example .header__short .button-menu {
+}
+
+
+/* detailed */
+
+.example .header__detailed {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+	padding: 15px;
+	background: url(imgs/bg.png);
+	background-size: cover;
+}
+
+.example .header__detailed .__image {
+	box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+	margin-bottom: 10px;
+}
+
+.example .header__detailed .__name {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 10px;
+	color: #fff;
+	font-weight: 300;
+}
+.example .header__detailed .__name .__first {
+	font-size: 26px;
+}
+.example .header__detailed .__name .__last {
+	font-size: 20px;
+}
+
+.example .header__detailed .__status {
+	font-size: 14px;
+	color: #c1e1e5;
+}
+
+
+.example .header__detailed .button-back,
+.example .header__detailed .button-menu {
+	position: absolute;
+	border: none;
+}
+
+.example .header__detailed .button-back {
+	left: 15px;
+	top: 15px;
+}
+
+.example .header__detailed .button-menu {
+	right: 15px;
+	top: 15px;
+}
+
+
+.example .body {
+	flex: 1;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.example .body div {
+	font-size: 50px;
+}

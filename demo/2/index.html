@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+	<title>Example #1</title>
+	<link rel="stylesheet" href="main.css" />
+	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
+	<script src="../../dist/js/convert.js"></script>
+	<style>
+		.g-hidden {
+			display: none !important;
+		}
+	</style>
+</head>
+<body>
+
+	<div style="width: 800px; position: relative;">
+
+		<div style="margin-bottom: 20px">
+			<button class="js-button-morph-open">Открыть</button>
+			<button class="js-button-morph-close">Закрыть</button>
+		</div>
+
+
+		<div>
+			Пользователь
+			<span class="b-user-img-n-name">
+				<img src="imgs/avatar-small.jpg" />
+				<span class="name">
+					<span class="first-name">Геннадий</span> <span class="last-name">Старшенбаум</span>
+				</span>
+			</span>
+			оставил комментарий
+		</div>
+
+
+
+		<div class="b-user-modal g-hidden">
+			<div class="b-user-modal__header">
+
+				<div class="b-user-modal__user-img-n-name">
+					<div class="image"><img src="imgs/avatar-big.jpg" width="100" height="100"/></div>
+					<div class="name">
+						<div><span class="b-user-modal__first-name">Геннадий</span></div>
+						<div><span class="b-user-modal__last-name">Старшенбаум</span></div>
+					</div>
+				</div>
+
+			</div>
+			<div class="b-user-modal__body">
+				Законодательство о противодействии недобросовестной конкуренции предусматривает, что правоспособность представляет собой суд, это применимо и к исключительным правам. В соответствии со сложившейся правоприменительной практикой государственная регистрация обеспечена залогом. Преступление, если рассматривать процессы в рамках частно-правовой теории, несостоятельно.
+			</div>
+			<button class="b-user-modal__btn-close"></button>
+		</div>
+
+	</div>
+
+
+	<script>
+		window.addEventListener('load', function() {
+			var openBtn = document.querySelector('.js-button-morph-open');
+			var closeBtn = document.querySelector('.js-button-morph-close');
+
+			var button = document.querySelector('.b-user-img-n-name');
+			var modal = document.querySelector('.b-user-modal');
+			var modalClose = modal.querySelector('.b-user-modal__btn-close');
+			//var sliderMorph = document.querySelector('.js-slider-morph');
+
+			var morph = new Morph({
+				fromObj: {
+					el: button,
+					classHidden: 'g-hidden'
+				},
+				toObj: {
+					el: modal,
+					classHidden: 'g-hidden'
+				},
+				childElConfigs: [
+					{ fromEl: '.first-name', toEl: '.b-user-modal__first-name' },
+					{ fromEl: '.last-name', toEl: '.b-user-modal__last-name' },
+					{ fromEl: 'img', toEl: '.image img' }
+				],
+				animationTime: 500
+			});
+
+			button.addEventListener('click', function(){
+				morph.animate();
+			});
+
+			openBtn.addEventListener('click', function(){
+				morph.animate();
+			});
+
+			closeBtn.addEventListener('click', function(){
+				console.log(2);
+				morph.reverse();
+			});
+
+			modalClose.addEventListener('click', function(){
+				console.log(2);
+				morph.reverse();
+			});
+
+			/*sliderMorph.addEventListener('input', function(){
+				morph.stepTo(Number(sliderMorph.value));
+			});*/
+		});
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+.container {
+  display: table; }
+  .container .left,
+  .container .right {
+    display: table-cell;
+    vertical-align: top;
+    width: 50%;
+    border: 1px dotted #ccc; }
+
+body {
+  margin: 20px; }
+
+.from {
+  background-color: #00a000; }
+  .from ul, .from li {
+    margin: 0;
+    padding: 0;
+    list-style: none; }
+
+.to {
+  width: 500px;
+  background-color: #00a000; }
+  .to .header {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between; }
+    .to .header .title {
+      font-size: 24px; }
+    .to .header .count span {
+      display: inline-block;
+      font-size: 15px;
+      text-align: center;
+      width: 30px;
+      line-height: 30px;
+      border: 1px solid red;
+      border-radius: 50%; }

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+	<title>Example #1</title>
+	<link rel="stylesheet" href="main.css" />
+	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
+	<script src="../../dist/js/convert.js"></script>
+	<style>
+		.g-hidden {
+			display: none !important;
+		}
+	</style>
+</head>
+<body>
+
+	<div>
+		<button class="js-button-morph">Анимировать</button>
+		<button class="js-button-morph-reverse">Реверс</button>
+		<input class="js-slider-morph" type="range" min="0" max="1" value="0" step=".01"/>
+	</div>
+
+	<div class="example" style="margin-bottom: 20px">
+		<div class="header">
+
+			<div class="header__short js-short g-hidden">
+				<span class="button-back js-button-back"></span>
+
+				<span class="__user-info">
+					<span class="__name-n-avatar">
+						<img class="__image js-image" src="imgs/avatar-small.jpg" width="25" height="25"/>
+						<span class="__name">
+							<span class="__first js-first-name">Геннадий</span>
+							<span class="__last js-last-name">Старшенбаум</span>
+						</span>
+					</span>
+					<span class="__status js-status">в сети</span>
+				</span>
+
+				<button class="button-menu js-button-menu"></button>
+			</div>
+
+			<div class="header__detailed js-detailed">
+				<img class="__image js-image" src="imgs/avatar-big.jpg" width="100" height="100"/>
+
+				<span class="__name">
+					<span class="__first js-first-name">Геннадий</span>
+					<span class="__last js-last-name">Старшенбаум</span>
+				</span>
+
+				<span class="__status js-status">в сети</span>
+
+				<button class="button-back js-button-back"></button>
+				<button class="button-menu js-button-menu"></button>
+			</div>
+
+		</div>
+		<div class="body js-scroll">
+
+			<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+			<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+			<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+			<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+
+		</div>
+	</div>
+
+
+	<script>
+		window.addEventListener('load', function(){
+			var buttonMorph = document.querySelector('.js-button-morph');
+			var buttonMorphReverse = document.querySelector('.js-button-morph-reverse');
+			var sliderMorph = document.querySelector('.js-slider-morph');
+
+			var scrollEl = document.querySelector('.js-scroll');
+
+			var fromEl = document.querySelector('.js-detailed');
+			var toEl = document.querySelector('.js-short');
+
+			var morph = new Morph({
+				fromObj: {
+					el: fromEl,
+					classHidden: 'g-hidden'
+				},
+				toObj: {
+					el: toEl,
+					classHidden: 'g-hidden'
+				},
+				actionType: 'move',
+				childElConfigs: [
+					{ fromEl: '.js-button-back', toEl: '.js-button-back' },
+					{ fromEl: '.js-button-menu', toEl: '.js-button-menu' },
+					{ fromEl: '.js-image', toEl: '.js-image' },
+					{ fromEl: '.js-first-name', toEl: '.js-first-name' },
+					{ fromEl: '.js-last-name', toEl: '.js-last-name' },
+					{ fromEl: '.js-status', toEl: '.js-status' }
+				]
+			});
+
+			scrollEl.addEventListener('scroll', function(){
+
+				/*var pos = Math.max(0, Math.min(scrollEl.scrollTop / 200, 1));
+
+				if (pos > .5) {
+					morph.animate();
+				} else {
+					morph.reverse();
+				}*/
+
+				/*var pos = Math.max(0, Math.min(scrollEl.scrollTop / 200, 1));
+				console.log(1, pos);
+				morph.stepTo(pos);
+				sliderMorph.value = pos;*/
+			});
+
+			buttonMorph.addEventListener('click', function(){
+				morph.animate();
+			});
+
+			buttonMorphReverse.addEventListener('click', function(){
+				morph.animate();
+			});
+
+			sliderMorph.addEventListener('input', function(){
+				morph.stepTo(Number(sliderMorph.value));
+			});
+		});
+	</script>
+
+</body>
+</html>

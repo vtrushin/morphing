@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
+		<link rel="stylesheet" href="styles/convert.css">
+	</head>
+	<body>
+		<div class="from">
+			<div style="margin-left: 20px" class="title">Заголовок, который должен перенестись, потому что не хватает места</div>
+			<div class="boxes">
+				<div class="a">Колонка 1</div>
+				<div class="b">Колонка 2</div>
+				<div class="c">Колонка 3</div>
+			</div>
+			<div class="abs">Что-то</div><img width="80%" height="100" border="8" src="https://avatars.yandex.net/get-dps/4ec94dbb961f91d921fd8146231fb604/normal/4ec94d.png">
+			<!--table(border = 10, width = "100%")
+			tr
+				td 123
+				td 456
+			tr
+				td 123
+				td 456
+			
+			-->
+			<button>Текст</button>
+			<div>Правило альтернанса аллитерирует размер. Как отмечает А.А.Потебня, метр традиционен.</div>
+		</div>
+		<div class="to">
+			<div class="title">Заголовок, который должен перенестись, потому что не хватает места</div><img width="100%" src="https://avatars.yandex.net/get-dps/4ec94dbb961f91d921fd8146231fb604/normal/4ec94d.png">
+			<!--table(border = 10, width = "100%")
+			tr
+				td 123
+				td 456
+			tr
+				td 123
+				td 456
+			
+			-->
+			<div class="abs"><span>Текст</span></div>
+		</div>
+		<script src="js/convert.js"></script>
+		<script>
+			window.addEventListener('load', function(){
+				var fromEl = document.querySelector('.from');
+				var toEl = document.querySelector('.to');
+			
+				console.time('Timer');
+			
+				var morph = new Morph(fromEl, toEl, {
+					specialElConfigs: [
+						{ fromEl: '.js-title', toEl: '.js-title' },
+						{ fromEl: '.js-count', toEl: '.js-count' }
+					]
+				});
+			
+				morph.animate();
+			
+				console.timeEnd('Timer');
+			});
+		</script>
+	</body>
+</html>

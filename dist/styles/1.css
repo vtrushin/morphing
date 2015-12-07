@@ -1,0 +1,106 @@
+@-webkit-keyframes test {
+  0% { }
+  100% {
+    margin-left: 200px; } }
+
+@keyframes test {
+  0% { }
+  100% {
+    margin-left: 200px; } }
+
+.hidden {
+  visibility: hidden; }
+
+.list {
+  width: 400px;
+  border: 1px solid lightgray;
+  margin: 0;
+  padding: 0;
+  font-family: Helvetica; }
+  .list li {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: baseline;
+    -webkit-align-items: baseline;
+        -ms-flex-align: baseline;
+            align-items: baseline;
+    margin: 0;
+    padding: 5px 10px; }
+    .list li > *:not(:last-child) {
+      margin-right: 10px; }
+    .list li .title {
+      font-size: 18px;
+      font-weight: bold; }
+    .list li .author {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+          -ms-flex: 1;
+              flex: 1;
+      font-size: 12px;
+      font-style: italic; }
+      .list li .author span {
+        background-color: yellow; }
+    .list li .star {
+      font-size: 9px; }
+
+.view {
+  position: absolute;
+  top: 20px;
+  left: 20%;
+  right: 20%;
+  font-family: Helvetica; }
+  .view .header {
+    background-color: beige;
+    padding: 10px; }
+    .view .header .title {
+      font-size: 30px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      letter-spacing: .5em; }
+    .view .header .author {
+      font-size: 12px;
+      letter-spacing: .1em;
+      text-transform: uppercase; }
+
+#elem {
+  width: 200px;
+  height: 200px;
+  border: 1px solid red;
+  background-color: white; }
+  #elem .header {
+    font-size: 12px; }
+
+#elem2 {
+  width: 400px;
+  height: 400px;
+  background-color: red; }
+  #elem2 .header {
+    font-size: 50px; }
+
+#b {
+  position: absolute;
+  left: 30%;
+  top: 30%;
+  width: 150px;
+  height: 100px;
+  background-color: pink; }
+
+body:-webkit-full-screen a {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex; }
+
+body:-moz-full-screen a {
+  display: flex; }
+
+body:-ms-fullscreen a {
+  display: -ms-flexbox;
+  display: flex; }
+
+body:fullscreen a {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex; }
