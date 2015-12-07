@@ -5,7 +5,7 @@
 	<title>Example #1</title>
 	<link rel="stylesheet" href="main.css" />
 	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
-	<script src="../../dist/js/convert.js"></script>
+	<script src="js/morph.js"></script>
 	<style>
 		.g-hidden {
 			display: none !important;
@@ -98,19 +98,9 @@
 			});
 
 			scrollEl.addEventListener('scroll', function(){
-
-				/*var pos = Math.max(0, Math.min(scrollEl.scrollTop / 200, 1));
-
-				if (pos > .5) {
-					morph.animate();
-				} else {
-					morph.reverse();
-				}*/
-
-				/*var pos = Math.max(0, Math.min(scrollEl.scrollTop / 200, 1));
-				console.log(1, pos);
+				var pos = Math.max(0, Math.min(scrollEl.scrollTop / 200, 1));
 				morph.stepTo(pos);
-				sliderMorph.value = pos;*/
+				sliderMorph.value = pos;
 			});
 
 			buttonMorph.addEventListener('click', function(){
