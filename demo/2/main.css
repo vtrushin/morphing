@@ -2,10 +2,10 @@ body {
 	font-family: Helvetica, Arial;
 }
 
-.morph-container,
+/*.morph-container,
 .morph-container * {
 	pointer-events: none !important;
-}
+}*/
 
 .b-user-img-n-name {
 	position: relative;
