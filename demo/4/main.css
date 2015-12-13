@@ -1,0 +1,85 @@
+body, button {
+	font-family: Helvetica, Arial;
+	font-size: 16px;
+}
+
+.pages {
+	width: 400px;
+	border: 1px solid red;
+}
+
+.page {
+	/*overflow: hidden;
+	height: 300px;*/
+}
+
+.page__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 50px;
+	background-color: #00afd5;
+	padding: 0 20px;
+}
+
+.page__header .page__header__back-btn {
+	border: none;
+	position: relative;
+	background-color: transparent;
+	margin: 0;
+	padding: 0; padding-left: 25px;
+	background: url(imgs/icon-back.svg) left center no-repeat;
+	color: #f5d213;
+	cursor: pointer;
+}
+
+.page__header .page__header__back-btn i {
+	content: "";
+	position: absolute;
+	left: 0;
+	display: block;
+	width: 19px;
+	height: 16px;
+
+}
+
+.page__header .page__header__title {
+	flex: 1;
+	text-align: center;
+}
+
+.page__header .page__header__title span {
+	font-weight: bold;
+	color: #fff;
+}
+
+.page__body {
+	background-color: white;
+}
+
+.page__body ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	max-height: 400px;
+	overflow: auto;
+}
+
+.page__body li span {
+	display: block;
+	padding: 15px 20px;
+	cursor: pointer;
+}
+
+.page__body li span:hover {
+	background-color: #fcf1b8;
+}
+
+
+.page__body li span b {
+	font-weight: normal;
+}
+
+.page__body li:not(:last-child) {
+	border-bottom: 1px solid #dadada;
+}

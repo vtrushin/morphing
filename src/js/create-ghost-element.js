@@ -9,6 +9,11 @@ export default function createGhostElement(el, excludedElList = []) {
 		clone.removeAttribute('class');
 		clone.removeAttribute('id');
 
+		if (computedStyle.overflow === 'auto' || computedStyle.overflow === 'scroll') {
+			clone.dataset.scrollTop = _el.scrollTop;
+			clone.dataset.scrollLeft = _el.scrollLeft;
+		}
+
 		if (childNode && childNode.nodeType === 3 && childNode.textContent.replace(/\s+/g, '') !== '') {
 			clone.textContent = childNode.textContent;
 		}
@@ -18,14 +23,16 @@ export default function createGhostElement(el, excludedElList = []) {
 			clone.style[prop] = computedStyle[prop];
 		}
 
-		if (excludedElList.indexOf(_el) !== -1) {
+		if (excludedElList.indexOf(_el) !== -1 && excludedElList[excludedElList.indexOf(_el)] !== el) {
 			clone.style.visibility = 'hidden';
-		}
+			clone.textContent = '';
 
-		Array.from(_el.children).forEach(childEl => {
-			// if (excludedElList.indexOf(childEl) !== -1) return;
-			clone.appendChild(process(childEl));
-		});
+		} else {
+			Array.from(_el.children).forEach(childEl => {
+				// if (excludedElList.indexOf(childEl) !== -1) return;
+				clone.appendChild(process(childEl));
+			});
+		}
 
 		return clone;
 	}

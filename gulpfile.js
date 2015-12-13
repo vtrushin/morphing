@@ -14,9 +14,9 @@ const dist = './dist';
 const jadePath = src + '/**/*.jade';
 const sassPath = src + '/**/*.sass';
 const es6Path = [
-	src + '/js/convert.js',
-	src + '/js/index.js',
-	src + '/js/calculate-matrix.js'
+	src + '/js/morph.js',
+	//src + '/js/index.js',
+	//src + '/js/calculate-matrix.js'
 ];
 const distCssPath = dist + '/';
 const distJsPath = dist + '/js';
@@ -32,8 +32,8 @@ gulp.task('default', [
 ]);
 
 // Delete the dist directory
-gulp.task('clean', function(cb){
-	del([dist + '/*'], cb);
+gulp.task('clean', function(){
+	return del([dist + '/*']);
 });
 
 gulp.task('jade', function(){
@@ -54,9 +54,9 @@ gulp.task('styles', function () {
 gulp.task('es6', function(){
 	console.log(src + '/js/dist.js');
 	gulp.src(es6Path)
-		.pipe(rollup(/*{
+		.pipe(rollup({
 			format: 'iife'
-		}*/))
+		}))
 		.pipe(babel())
 		.pipe(gulp.dest(distJsPath))
 });

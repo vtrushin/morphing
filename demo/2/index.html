@@ -5,7 +5,7 @@
 	<title>Example #1</title>
 	<link rel="stylesheet" href="main.css" />
 	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
-	<script src="../../dist/js/convert.js"></script>
+	<script src="../../dist/js/morph.js"></script>
 	<style>
 		.g-hidden {
 			display: none !important;
@@ -66,40 +66,68 @@
 			var modalClose = modal.querySelector('.b-user-modal__btn-close');
 			//var sliderMorph = document.querySelector('.js-slider-morph');
 
-			var morph = new Morph({
-				fromObj: {
-					el: button,
-					classHidden: 'g-hidden'
-				},
-				toObj: {
-					el: modal,
-					classHidden: 'g-hidden'
-				},
-				childElConfigs: [
-					{ fromEl: '.first-name', toEl: '.b-user-modal__first-name' },
-					{ fromEl: '.last-name', toEl: '.b-user-modal__last-name' },
-					{ fromEl: 'img', toEl: '.image img' }
-				],
-				animationTime: 500
-			});
+			var morph1, morph2;
 
-			button.addEventListener('click', function(){
-				morph.animate();
-			});
+			var duration = 500;
 
-			openBtn.addEventListener('click', function(){
-				morph.animate();
-			});
+			function isAnimating() {
+				return ((morph1 && morph1.isAnimating()) || (morph2 && morph2.isAnimating()));
+			}
 
-			closeBtn.addEventListener('click', function(){
-				console.log(2);
-				morph.reverse();
-			});
+			function openModal() {
+				if (isAnimating()) return;
 
-			modalClose.addEventListener('click', function(){
-				console.log(2);
-				morph.reverse();
-			});
+				morph1 = new Morph({
+					from: {
+						el: button,
+						classHidden: 'g-hidden'
+					},
+					to: {
+						el: modal,
+						classHidden: 'g-hidden'
+					},
+					children: [
+						{ from: '.first-name', to: '.b-user-modal__first-name' },
+						{ from: '.last-name', to: '.b-user-modal__last-name' },
+						{ from: 'img', to: '.image img' }
+					],
+					duration: duration
+				});
+
+				morph1.animate();
+			}
+
+			function closeModal() {
+				if (isAnimating()) return;
+
+				morph2 = new Morph({
+					from: {
+						el: modal,
+						classHidden: 'g-hidden'
+					},
+					to: {
+						el: button,
+						classHidden: 'g-hidden'
+					},
+					children: [
+						{ from: '.b-user-modal__first-name', to: '.first-name' },
+						{ from: '.b-user-modal__last-name', to: '.last-name' },
+						{ from: '.image img', to: 'img' }
+					],
+					actionType: 'move',
+					duration: duration
+				});
+
+				morph2.animate();
+			}
+
+			button.addEventListener('click', openModal);
+
+			openBtn.addEventListener('click', openModal);
+
+			closeBtn.addEventListener('click', closeModal);
+
+			modalClose.addEventListener('click', closeModal);
 
 			/*sliderMorph.addEventListener('input', function(){
 				morph.stepTo(Number(sliderMorph.value));

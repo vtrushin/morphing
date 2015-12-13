@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+	<title>Example #1</title>
+	<link rel="stylesheet" href="main.css" />
+	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
+	<script src="../../dist/js/morph.js"></script>
+	<style>
+		.g-hidden {
+			display: none !important;
+		}
+	</style>
+</head>
+<body>
+
+
+<div class="pages">
+
+	<div class="page _list js-page-list">
+		<div class="page__header js-page-header">
+			<span class="page__header__title"><span class="js-page-title">Список</span></span>
+		</div>
+		<div class="page__body js-page-body">
+			<ul>
+				<li class="js-page-link"><span class="link" data-link-for="element1"><b>Элемент 1</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element2"><b>Элемент 2</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element3"><b>Элемент 3</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element4"><b>Элемент 4</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element5"><b>Элемент 5</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element6"><b>Элемент 6</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element8"><b>Элемент 7</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element9"><b>Элемент 8</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element10"><b>Элемент 9</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element11"><b>Элемент 10</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element12"><b>Элемент 11</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element13"><b>Элемент 12</b></span></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="page _detailed g-hidden js-page-detailed">
+		<div class="page__header js-page-header">
+			<button class="page__header__back-btn js-page-back-button">Список</button>
+			<span class="page__header__title"><span class="js-page-title"></span></span>
+		</div>
+		<div class="page__body js-page-body">
+			<div style="padding: 20px">
+				Впечатление, несмотря на то, что все эти характерологические черты отсылают не к единому образу нарратора, параллельно. Басня дает строфоид. Тавтология осознаёт музыкальный возврат к стереотипам, поэтому никого не удивляет, что в финале порок наказан.
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+<script>
+	window.addEventListener('load', function() {
+		var pageList = document.querySelector('.js-page-list');
+		var pageListLinks = pageList.querySelectorAll('.link');
+
+		var pageDetailed = document.querySelector('.js-page-detailed');
+		var pageDetailedBackButton = pageDetailed.querySelector('.js-page-back-button');
+		var pageDetailedTitle = pageDetailed.querySelector('.js-page-title');
+
+		var duration = 500;
+
+		var detailedPageId;
+
+		Array.prototype.slice.apply(pageListLinks).forEach(function(pageListLink, i){
+			pageListLink.addEventListener('click', function(){
+				pageDetailedTitle.textContent = pageListLink.textContent;
+				detailedPageId = pageListLink.dataset.linkFor;
+
+				new Morph({
+					from: {
+						el: pageList,
+						classHidden: 'g-hidden'
+					},
+					to: {
+						el: pageDetailed,
+						classHidden: 'g-hidden'
+					},
+					actionType: 'move',
+					duration: duration,
+					children: [
+						{ from: '.js-page-header', to: '.js-page-header' },
+						{ from: '.js-page-title', to: '.js-page-back-button' },
+						/*{
+							from: '.js-page-body',
+							to: '.js-page-body'
+						},*/
+						{ from: '.js-page-link:nth-child(' + (i + 1) + ') span b', to: '.js-page-title' },
+					]
+				}).animate();
+			});
+		});
+
+		pageDetailedBackButton.addEventListener('click', function(){
+			new Morph({
+				from: {
+					el: pageDetailed,
+					classHidden: 'g-hidden'
+				},
+				to: {
+					el: pageList,
+					classHidden: 'g-hidden'
+				},
+				actionType: 'move',
+				duration: duration,
+				children: [
+					{ from: '.js-page-header', to: '.js-page-header' },
+					{ from: '.js-page-title', to: '.js-page-link span[data-link-for="' + detailedPageId + '"] b' },
+					{ from: '.js-page-back-button', to: '.js-page-title' },
+				]
+			}).animate();
+		});
+	});
+</script>
+
+</body>
+</html>

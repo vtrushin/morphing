@@ -5,7 +5,7 @@
 	<title>Example #1</title>
 	<link rel="stylesheet" href="main.css" />
 	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
-	<script src="../../dist/js/convert.js"></script>
+	<script src="../../dist/js/morph.js"></script>
 	<style>
 		.g-hidden {
 			visibility: hidden !important;
@@ -61,7 +61,7 @@
 
 			var messageBody = document.createElement('span');
 			messageBody.className = 'g-hidden';
-			messageBody.innerHTML = '<i></i><b>' + textArea.value + '</b>';
+			messageBody.innerHTML = '<i></i><b style="white-space: pre-wrap; word-break: break-all">' + textArea.value + '</b>';
 
 			messageEl.appendChild(messageBody);
 			list.appendChild(messageEl);
@@ -69,23 +69,22 @@
 			list.scrollTop = list.scrollHeight;
 
 			var morph = new Morph({
-				fromObj: {
+				from: {
 					el: textArea,
 					classHidden: 'g-hidden'
 				},
-				toObj: {
+				to: {
 					el: messageBody,
 					classHidden: 'g-hidden'
 				},
-				animationTime: 500/*,
-				animationEasing: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)'*/
+				duration: 500,
+				autoClear: true/*,
+				easingFunction: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)'*/
 			});
 
 			textArea.value = '';
 
-			morph.animate(function(){
-				morph.removeAnimationLayer();
-			});
+			morph.animate(/*morph.clear.bind(morph)*/);
 		});
 	});
 </script>

@@ -18,8 +18,8 @@ export default function animateElements(animationList, duration, easing, callbac
 
 	animationList.forEach(animation => {
 		var frames = isReverse
-			? [ animation.toObj, animation.fromObj ]
-			: [ animation.fromObj, animation.toObj ]
+			? [ animation.to, animation.from ]
+			: [ animation.from, animation.to ]
 		;
 
 		let player = animation.el.animate(frames, settings);
