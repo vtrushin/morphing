@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>Example #1</title>
 	<link rel="stylesheet" href="main.css" />
-	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
+	<script src="../../vendor/web-animations-js/web-animations-next.min.js"></script>
 	<script src="../../dist/js/morph.js"></script>
 	<style>
 		.g-hidden {
@@ -14,8 +14,10 @@
 </head>
 <body>
 
+<div></div>
 
-<div class="pages">
+
+<div class="pages js-pages">
 
 	<div class="page _list js-page-list">
 		<div class="page__header js-page-header">
@@ -29,12 +31,25 @@
 				<li class="js-page-link"><span class="link" data-link-for="element4"><b>Элемент 4</b></span></li>
 				<li class="js-page-link"><span class="link" data-link-for="element5"><b>Элемент 5</b></span></li>
 				<li class="js-page-link"><span class="link" data-link-for="element6"><b>Элемент 6</b></span></li>
-				<li class="js-page-link"><span class="link" data-link-for="element8"><b>Элемент 7</b></span></li>
-				<li class="js-page-link"><span class="link" data-link-for="element9"><b>Элемент 8</b></span></li>
-				<li class="js-page-link"><span class="link" data-link-for="element10"><b>Элемент 9</b></span></li>
-				<li class="js-page-link"><span class="link" data-link-for="element11"><b>Элемент 10</b></span></li>
-				<li class="js-page-link"><span class="link" data-link-for="element12"><b>Элемент 11</b></span></li>
-				<li class="js-page-link"><span class="link" data-link-for="element13"><b>Элемент 12</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element7"><b>Элемент 7</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element8"><b>Элемент 8</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element9"><b>Элемент 9</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element10"><b>Элемент 10</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element11"><b>Элемент 11</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element12"><b>Элемент 12</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element13"><b>Элемент 13</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element14"><b>Элемент 14</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element15"><b>Элемент 15</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element16"><b>Элемент 16</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element17"><b>Элемент 17</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element18"><b>Элемент 18</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element19"><b>Элемент 19</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element20"><b>Элемент 20</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element21"><b>Элемент 21</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element22"><b>Элемент 22</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element23"><b>Элемент 23</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element24"><b>Элемент 24</b></span></li>
+				<li class="js-page-link"><span class="link" data-link-for="element25"><b>Элемент 25</b></span></li>
 			</ul>
 		</div>
 	</div>
@@ -56,6 +71,23 @@
 
 <script>
 	window.addEventListener('load', function() {
+		/*console.time('adding');
+		var a = document.createElement('div');
+
+		document.body.appendChild(a);
+
+		var styles = window.getComputedStyle(a);
+
+		for (var i = 0, len = styles.length; i < len; i ++) {
+			var prop = styles[i];
+			console.log(prop, ':', styles[prop]);
+		}
+
+		console.timeEnd('adding');*/
+
+
+		var pagesCover = document.querySelector('.js-pages');
+
 		var pageList = document.querySelector('.js-page-list');
 		var pageListLinks = pageList.querySelectorAll('.link');
 
@@ -63,7 +95,7 @@
 		var pageDetailedBackButton = pageDetailed.querySelector('.js-page-back-button');
 		var pageDetailedTitle = pageDetailed.querySelector('.js-page-title');
 
-		var duration = 500;
+		var duration = 300;
 
 		var detailedPageId;
 
@@ -72,46 +104,136 @@
 				pageDetailedTitle.textContent = pageListLink.textContent;
 				detailedPageId = pageListLink.dataset.linkFor;
 
+				/*new Morph(
+					{ el: pageList, classHidden: 'g-hidden' },
+					{ el: pageDetailed, classHidden: 'g-hidden' },
+					{
+
+					}
+				);*/
+
 				new Morph({
-					from: {
+					src: {
 						el: pageList,
 						classHidden: 'g-hidden'
 					},
-					to: {
+					dist: {
 						el: pageDetailed,
 						classHidden: 'g-hidden'
 					},
-					actionType: 'move',
+					type: 'move',
+					context: pagesCover,
 					duration: duration,
-					children: [
-						{ from: '.js-page-header', to: '.js-page-header' },
-						{ from: '.js-page-title', to: '.js-page-back-button' },
+					partials: [
+						{ src: '.js-page-header', dist: '.js-page-header' },
+						{ src: '.js-page-title', dist: '.js-page-back-button' },
+						{ src: '.js-page-body', dist: '.js-page-body' },
 						/*{
-							from: '.js-page-body',
-							to: '.js-page-body'
+							src: {
+								el: '.js-page-body',
+								styles: {
+									transform: 'translateX(-100%)',
+									opacity: 0
+								}
+							},
+							dist: {
+								//el: '.js-page-body',
+								styles: {
+									transform: 'translateX(100%)',
+									opacity: 0
+								}
+							}
 						},*/
-						{ from: '.js-page-link:nth-child(' + (i + 1) + ') span b', to: '.js-page-title' },
-					]
+						//{ from: '.js-page-link:nth-child(' + (i + 1) + ') span b', to: '.js-page-title' },
+						/*{
+							dist: {
+								el: '.js-page-title',
+								styles: {
+									src: {
+										transform: 'translateX(100%)',
+										opacity: 0
+									},
+									dist: {
+										transform: 'translateX(0)',
+										opacity: 1
+									}
+								}
+							}
+						}*/
+					]/*,
+					context: pagesCover*/
 				}).animate();
 			});
 		});
 
 		pageDetailedBackButton.addEventListener('click', function(){
 			new Morph({
-				from: {
+				src: {
 					el: pageDetailed,
 					classHidden: 'g-hidden'
 				},
-				to: {
+				dist: {
 					el: pageList,
 					classHidden: 'g-hidden'
 				},
-				actionType: 'move',
+				type: 'move',
+				context: pagesCover,
 				duration: duration,
-				children: [
-					{ from: '.js-page-header', to: '.js-page-header' },
-					{ from: '.js-page-title', to: '.js-page-link span[data-link-for="' + detailedPageId + '"] b' },
-					{ from: '.js-page-back-button', to: '.js-page-title' },
+				partials: [
+					{ src: '.js-page-header', dist: '.js-page-header' },
+
+					/*{ src: '.js-page-header', dist: {
+						styles:
+					} },*/
+
+
+
+					//{ from: '.js-page-title', to: '.js-page-link span[data-link-for="' + detailedPageId + '"] b' },
+					/*{
+						src: {
+							el: '.js-page-title',
+							styles: {
+								src: {
+									transform: 'translateX(0)',
+									opacity: 1
+								},
+								dist: {
+									transform: 'translateX(100%)',
+									opacity: 0
+								}
+							}
+						}
+					},*/
+					/*{
+						src: {
+							el: '.js-page-body',
+							styles: {
+								src: {
+									transform: 'translateX(0)',
+									opacity: 1
+								},
+								dist: {
+									transform: 'translateX(100%)',
+									opacity: 0
+								}
+							}
+						},
+						dist: {
+							el: '.js-page-body',
+							styles: {
+								src: {
+									transform: 'translateX(-100%)',
+									opacity: 0
+								},
+								dist: {
+									transform: 'translateX(0)',
+									opacity: 1
+								}
+							}
+						}
+					},*/
+					{ src: '.js-page-body', dist: '.js-page-body', effect: 'slideRight' },
+					{ src: '.js-page-back-button', dist: '.js-page-title' },
 				]
 			}).animate();
 		});

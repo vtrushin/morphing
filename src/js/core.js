@@ -1,154 +1,127 @@
-import createGhostElement from './create-ghost-element';
+import GhostElementsBuilder from './ghost-elements-builder';
 import getTransformClientRectDiff from './get-transform-diff';
 import animateElements from './animate-elements';
+import * as transitionEffects from './transitionEffects';
 
 export default class Morph {
 
 	static getDefaultSettings() {
 		return {
-			actionType: 'copy', // copy | move | hide
-			from: {
+			type: 'copy', // copy | move | hide
+			src: {
 				el: null,
 				classHidden: null
 			},
-			to: {
+			dist: {
 				el: null,
 				classHidden: null
 			},
-			children: [],
+			partials: [],
+			context: document.body,
 			duration: 300,
-			easingFunction: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
+			easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
 			autoClear: true
 		}
 	}
 
 	constructor(settings) {
+		console.time('constructor');
 		this.settings = Object.assign(Morph.getDefaultSettings(), settings);
-		this.createAnimationLayer();
-	}
-
-	createAnimationLayer() {
-		if (this.morphEl) return;
-
+		this.ghostElementsBuilder = new GhostElementsBuilder();
 		this.morphEl = document.createElement('div');
 		this.morphEl.className = 'morph-container';
 
-		let fromObj = this.settings.from;
-		let toObj = this.settings.to;
-		// let { fromObj, toObj } = this.settings;
-		let excludeFromElList = [];
-		let excludeToElList = [];
+		this.init();
+		console.timeEnd('constructor');
+	}
+
+	init() {
+		let src = this.settings.src;
+		let dist = this.settings.dist;
+
+		let excludeSrcElList = [];
+		let excludeDistElList = [];
 
 		this.morphItems = [];
 
-		this.coverTransform = {
-			from: {},
-			to: {}
+		let partials = this.settings.partials.map(setting => {
+			return {
+				srcEl: src.el.querySelector(setting.src),
+				distEl: dist.el.querySelector(setting.dist)
+			};
+		});
+
+		partials.forEach(partial => {
+			let morphItem = {
+				src: {},
+				dist: {}
+			};
+			this.morphItems.push(morphItem);
+			excludeSrcElList.push(partial.srcEl);
+			excludeDistElList.push(partial.distEl);
+		});
+
+		/*this.coverTransform = {
+			src: {},
+			dist: {}
+		};*/
+
+		let mainMorph = {
+			src: {},
+			dist: {}
 		};
 
-		let mainAnimation = {
-			from: {},
-			to: {}
-		};
+		if (this.settings.type === 'copy') {
+			dist.el.classList.remove(dist.classHidden);
 
-		if (this.settings.actionType === 'copy') {
-			toObj.el.classList.remove(toObj.classHidden);
+			// this.coverTransform.src.height = src.el.parentElement.offsetHeight;
+			// this.coverTransform.dist.height = dist.el.parentElement.offsetHeight + 10;
 
-			this.coverTransform.from.height = fromObj.el.parentElement.offsetHeight;
-			this.coverTransform.to.height = toObj.el.parentElement.offsetHeight + 10;
-
-			this.settings.children.forEach(config => {
-				let fromEl = fromObj.el.querySelector(config.from);
-				let toEl = toObj.el.querySelector(config.to);
-
-				this.morphItems.push({
-					from: {
-						el: createGhostElement(fromEl)
-					},
-					to: {
-						el: createGhostElement(toEl)
-					}
-				});
-				excludeFromElList.push(fromEl);
-				excludeToElList.push(toEl);
+			partials.forEach((partial, i) => {
+				let morphItem = this.morphItems[i];
+				morphItem.src.el = this.ghostElementsBuilder.create(partial.srcEl);
+				morphItem.dist.el = this.ghostElementsBuilder.create(partial.distEl);
 			});
 
-			mainAnimation.from.el = createGhostElement(fromObj.el, excludeFromElList);
-			mainAnimation.to.el = createGhostElement(toObj.el, excludeToElList);
+			mainMorph.src.el = this.ghostElementsBuilder.create(src.el, excludeSrcElList);
+			mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
 
-			toObj.el.classList.add(toObj.classHidden);
+			dist.el.classList.add(dist.classHidden);
 
 
-		} else if (this.settings.actionType === 'move') {
+		} else if (this.settings.type === 'move') {
 
-			this.settings.children.forEach(config => {
-				this.morphItems.push({
-					from: {},
-					to: {}
-				});
-				excludeFromElList.push(fromObj.el.querySelector(config.from));
-				excludeToElList.push(toObj.el.querySelector(config.to));
+			// this.coverTransform.src.height = src.el.parentElement.offsetHeight;
+
+			partials.forEach((partial, i) => {
+				this.morphItems[i].src.el = this.ghostElementsBuilder.create(partial.srcEl, excludeSrcElList);
 			});
 
+			mainMorph.src.el = this.ghostElementsBuilder.create(src.el, excludeSrcElList);
 
-			this.coverTransform.from.height = fromObj.el.parentElement.offsetHeight;
+			src.el.classList.add(src.classHidden);
+			dist.el.classList.remove(dist.classHidden);
 
-			this.settings.children.forEach((config, i) => {
-				this.morphItems[i].from.el = createGhostElement(fromObj.el.querySelector(config.from), excludeFromElList);
+			// this.coverTransform.dist.height = dist.el.parentElement.offsetHeight;
+
+			partials.forEach((partial, i) => {
+				this.morphItems[i].dist.el = this.ghostElementsBuilder.create(partial.distEl, excludeDistElList);
 			});
 
-			mainAnimation.from.el = createGhostElement(fromObj.el, excludeFromElList);
-
-			fromObj.el.classList.add(fromObj.classHidden);
-			toObj.el.classList.remove(toObj.classHidden);
-
-			this.coverTransform.to.height = toObj.el.parentElement.offsetHeight;
-
-			this.settings.children.forEach((config, i) => {
-				this.morphItems[i].to.el = createGhostElement(toObj.el.querySelector(config.to), excludeToElList);
-			});
-
-			mainAnimation.to.el = createGhostElement(toObj.el, excludeToElList);
-
-
-
-
-			/*this.coverTransform.from.height = fromObj.el.parentElement.offsetHeight;
-
-			fromObj.el.classList.add(fromObj.classHidden);
-			toObj.el.classList.remove(toObj.classHidden);
-
-			this.coverTransform.to.height = toObj.el.parentElement.offsetHeight;
-
-			this.settings.children.forEach((config, i) => {
-				this.morphItems[i].to.el = createGhostElement(toObj.el.querySelector(config.to), excludeToElList);
-			});
-
-			mainAnimation.to.el = createGhostElement(toObj.el, excludeToElList);
-
-			fromObj.el.classList.remove(fromObj.classHidden);
-			toObj.el.classList.add(toObj.classHidden);
-
-			this.settings.children.forEach((config, i) => {
-				this.morphItems[i].from.el = createGhostElement(fromObj.el.querySelector(config.from), excludeFromElList);
-			});
-
-			mainAnimation.from.el = createGhostElement(fromObj.el, excludeFromElList);*/
+			mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
 		}
 
-		console.log(this.morphItems);
+		this.morphItems.unshift(mainMorph);
 
-		this.morphItems.unshift(mainAnimation);
-
-		this.morphItems.forEach(animation => {
+		this.morphItems.forEach(morphItem => {
 			let el = document.createElement('div');
 			el.className = 'morph-animation';
-			el.appendChild(animation.from.el);
-			el.appendChild(animation.to.el);
+			el.appendChild(morphItem.src.el);
+			el.appendChild(morphItem.dist.el);
 			this.morphEl.appendChild(el);
 		});
 
-		document.body.appendChild(this.morphEl);
+		this.settings.context.appendChild(this.morphEl);
 
 		this.reCalculate();
 
@@ -169,57 +142,59 @@ export default class Morph {
 			fromObj: { height: this.coverTransform.fromObj.height + 'px' },
 			toObj: { height: this.coverTransform.toObj.height + 'px' }
 		});*/
-
-		console.timeEnd('Morph instantiating');
 	}
-
 
 	reCalculate() {
 		this.animationList = [];
 
 		this.morphItems.forEach(morphItem => {
-			let _fromElClientRect = morphItem.from.el.getBoundingClientRect();
-			let _toElClientRect = morphItem.to.el.getBoundingClientRect();
+			let srcEl = morphItem.src.el;
+			let distEl = morphItem.dist.el;
 
-			let fromTransform = getTransformClientRectDiff(_fromElClientRect, _toElClientRect);
-			let toTransform = getTransformClientRectDiff(_toElClientRect, _fromElClientRect);
+			let effectFn = Morph.effects.mix;
+			let effect;
 
-			morphItem.from.el.style.transformOrigin = 'center center';
-			morphItem.to.el.style.transformOrigin = 'center center';
+			let srcAnimation = {};
+			let distAnimation = {};
 
-			this.animationList.push({
-				el: morphItem.from.el,
-				from: {
-					transform: 'translate(0, 0) scale(1, 1)',
-					opacity: 1
-				},
-				to: {
-					transform: `
-						translate(${fromTransform.offsetX}px, ${fromTransform.offsetY}px)
-						scale(${fromTransform.scaleX}, ${fromTransform.scaleY})
-					`,
-					opacity: 0
+			if ('effect' in morphItem) {
+				if (typeof morphItem.effect === 'string' && morphItem.effect in Morph.effects) {
+					effectFn = Morph.effects[morphItem.effect];
+				} else if (typeof morphItem.effect === 'function') {
+					effectFn = morphItem.effect;
+				} else {
+					throw new Error('effect param must be string or function');
 				}
+			}
+
+			effect = effectFn(srcEl, distEl);
+
+			srcAnimation.from = {};
+			srcAnimation.to = effect.src;
+			Object.keys(effect.src).forEach(cssProp => {
+				srcAnimation.from[cssProp] = window.getComputedStyle(srcEl).getPropertyValue(cssProp);
 			});
 
-			this.animationList.push({
-				el: morphItem.to.el,
-				from: {
-					transform: `
-						translate(${toTransform.offsetX}px, ${toTransform.offsetY}px)
-						scale(${toTransform.scaleX}, ${toTransform.scaleY})
-					`,
-					opacity: 0
-				},
-				to: {
-					transform: 'translate(0, 0) scale(1, 1)',
-					opacity: 1
-				}
+			distAnimation.from = effect.dist;
+			distAnimation.to = {};
+			Object.keys(effect.dist).forEach(cssProp => {
+				distAnimation.to[cssProp] = window.getComputedStyle(srcEl).getPropertyValue(cssProp);
 			});
 
+			this.animationList.push(
+				{
+					el: srcEl,
+					from: srcAnimation.from,
+					to: srcAnimation.to
+				},
+				{
+					el: distEl,
+					from: distAnimation.from,
+					to: distAnimation.to
+				}
+			);
 		});
 	}
-
 
 	_fixScrollPosition() {
 		function eachChild(el) {
@@ -231,15 +206,13 @@ export default class Morph {
 				el.scrollLeft = el.dataset.scrollLeft;
 			}
 
-			Array.from(el.children).forEach(childEl => {
-				eachChild(childEl);
-			});
+			Array.from(el.children).forEach(eachChild);
 		}
+
 		this.animationList.forEach(animation => {
 			eachChild(animation.el);
 		});
 	}
-
 
 	animate(callback) {
 		if (this._isAnimating || !this.atStart) return;
@@ -249,20 +222,19 @@ export default class Morph {
 
 		this._fixScrollPosition();
 
-		this.settings.from.el.parentElement.style.height = this.settings.from.el.parentElement.clientHeight + 'px';
+		this.settings.src.el.parentElement.style.height = this.settings.src.el.parentElement.clientHeight + 'px';
 
 		//this.settings.from.el.classList.add(this.settings.from.classHidden);
+		this.settings.dist.el.classList.add(this.settings.dist.classHidden);
 
 		animateElements(this.animationList, this.settings.duration, this.settings.easingFunction, () => {
-			this.settings.to.el.classList.remove(this.settings.to.classHidden);
-
+			this.settings.dist.el.classList.remove(this.settings.dist.classHidden);
 
 			//this.settings.from.el.classList.remove(this.settings.from.classHidden);
-			this.settings.from.el.parentElement.style.height = '';
-
+			this.settings.src.el.parentElement.style.height = '';
 
 			if (this.settings.actionType === 'move') {
-				this.settings.from.el.classList.add(this.settings.from.classHidden);
+				this.settings.src.el.classList.add(this.settings.src.classHidden);
 			}
 
 			this.morphEl.style.display = 'none';
@@ -284,10 +256,10 @@ export default class Morph {
 
 		this._isAnimating = true;
 		this.morphEl.style.display = 'block';
-		this.settings.to.el.classList.add(this.settings.to.classHidden);
+		this.settings.dist.el.classList.add(this.settings.dist.classHidden);
 
 		animateElements(this.animationList, this.settings.duration, this.settings.easingFunction, () => {
-			this.settings.from.el.classList.remove(this.settings.from.classHidden);
+			this.settings.src.el.classList.remove(this.settings.src.classHidden);
 			this.morphEl.style.display = 'none';
 			this._isAnimating = false;
 			this.atStart = true;
@@ -295,7 +267,8 @@ export default class Morph {
 	}
 
 	clear() {
-		this.morphEl.remove();
+		this.settings.context.removeChild(this.morphEl);
+		this.ghostElementsBuilder.clear();
 	}
 
 	isAnimating() {
@@ -303,3 +276,5 @@ export default class Morph {
 	}
 
 }
+
+Morph.effects = transitionEffects;

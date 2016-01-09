@@ -16,9 +16,8 @@
     "gulp-browserify": "^0.5.1",
     "gulp-jade": "^1.1.0",
     "gulp-postcss": "^6.0.1",
-    "gulp-rollup": "^1.0.1",
-    "gulp-sass": "^2.0.4",
-    "postcss-custom-objects": "https://github.com/vtrushin/postcss-custom-objects.git"
+    "gulp-rollup": "^1.7.0",
+    "gulp-sass": "^2.0.4"
   },
   "dependencies": {
     "create-keyframe-animation": "^0.1.0",

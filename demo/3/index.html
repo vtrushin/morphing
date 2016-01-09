@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>Example #1</title>
 	<link rel="stylesheet" href="main.css" />
-	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
+	<script src="../../vendor/web-animations-js/web-animations-next.min.js"></script>
 	<script src="../../dist/js/morph.js"></script>
 	<style>
 		.g-hidden {
@@ -69,15 +69,15 @@
 			list.scrollTop = list.scrollHeight;
 
 			var morph = new Morph({
-				from: {
+				src: {
 					el: textArea,
 					classHidden: 'g-hidden'
 				},
-				to: {
+				dist: {
 					el: messageBody,
 					classHidden: 'g-hidden'
 				},
-				duration: 500,
+				duration: 3000,
 				autoClear: true/*,
 				easingFunction: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)'*/
 			});

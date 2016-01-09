@@ -1,30 +1,23 @@
 export default function animateElements(animationList, duration, easing, callback, isReverse) {
-	var length = animationList.length;
-	var finishedCount = 0;
-
-	var settings = {
+	let settings = {
 		duration: duration,
 		easing: easing,
 		direction: 'alternate',
 		fill: 'backwards'
 	};
 
-	function onEachAfter() {
-		finishedCount ++;
-		if (finishedCount == length && callback) {
-			callback();
-		}
-	}
-
-	animationList.forEach(animation => {
-		var frames = isReverse
+	let keyframeEffects = animationList.map(animation => {
+		let frames = isReverse
 			? [ animation.to, animation.from ]
 			: [ animation.from, animation.to ]
 		;
-
-		let player = animation.el.animate(frames, settings);
-		player.onfinish = onEachAfter;
-		//player.pause();
+		return new KeyframeEffect(animation.el, frames, settings);
 	});
 
+	let groupEffect = new GroupEffect(keyframeEffects);
+	let player = document.timeline.play(groupEffect);
+
+	if (callback) {
+		player.onfinish = callback;
+	}
 }

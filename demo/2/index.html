@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>Example #1</title>
 	<link rel="stylesheet" href="main.css" />
-	<script src="../../vendor/web-animations-js/web-animations.min.js"></script>
+	<script src="../../vendor/web-animations-js/web-animations-next.min.js"></script>
 	<script src="../../dist/js/morph.js"></script>
 	<style>
 		.g-hidden {
@@ -78,18 +78,18 @@
 				if (isAnimating()) return;
 
 				morph1 = new Morph({
-					from: {
+					src: {
 						el: button,
 						classHidden: 'g-hidden'
 					},
-					to: {
+					dist: {
 						el: modal,
 						classHidden: 'g-hidden'
 					},
-					children: [
-						{ from: '.first-name', to: '.b-user-modal__first-name' },
-						{ from: '.last-name', to: '.b-user-modal__last-name' },
-						{ from: 'img', to: '.image img' }
+					partials: [
+						{ src: '.first-name', dist: '.b-user-modal__first-name' },
+						{ src: '.last-name', dist: '.b-user-modal__last-name' },
+						{ src: 'img', dist: '.image img' }
 					],
 					duration: duration
 				});
@@ -101,20 +101,20 @@
 				if (isAnimating()) return;
 
 				morph2 = new Morph({
-					from: {
+					src: {
 						el: modal,
 						classHidden: 'g-hidden'
 					},
-					to: {
+					dist: {
 						el: button,
 						classHidden: 'g-hidden'
 					},
-					children: [
-						{ from: '.b-user-modal__first-name', to: '.first-name' },
-						{ from: '.b-user-modal__last-name', to: '.last-name' },
-						{ from: '.image img', to: 'img' }
+					partials: [
+						{ src: '.b-user-modal__first-name', dist: '.first-name' },
+						{ src: '.b-user-modal__last-name', dist: '.last-name' },
+						{ src: '.image img', dist: 'img' }
 					],
-					actionType: 'move',
+					type: 'move',
 					duration: duration
 				});
 

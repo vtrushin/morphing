@@ -54,9 +54,9 @@ gulp.task('styles', function () {
 gulp.task('es6', function(){
 	console.log(src + '/js/dist.js');
 	gulp.src(es6Path)
-		.pipe(rollup({
+		.pipe(rollup(/*{
 			format: 'iife'
-		}))
+		}*/))
 		.pipe(babel())
 		.pipe(gulp.dest(distJsPath))
 });

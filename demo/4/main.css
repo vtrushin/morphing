@@ -6,6 +6,8 @@ body, button {
 .pages {
 	width: 400px;
 	border: 1px solid red;
+	/*position: relative;*/
+	overflow: hidden;
 }
 
 .page {

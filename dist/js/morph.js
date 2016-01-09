@@ -4,403 +4,572 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-(function () {
-	'use strict';
+function getTransformClientRectDiff(aCR, bCR) {
+	return {
+		offsetX: bCR.left + bCR.width / 2 - (aCR.left + aCR.width / 2),
+		offsetY: bCR.top + bCR.height / 2 - (aCR.top + aCR.height / 2),
+		scaleX: bCR.width / aCR.width,
+		scaleY: bCR.height / aCR.height
+	};
+}
 
-	function animateElements(animationList, duration, easing, callback, isReverse) {
-		var length = animationList.length;
-		var finishedCount = 0;
+function mix(srcEl, distEl) {
+	var srcClientRect = srcEl.getBoundingClientRect();
+	var distClientRect = distEl.getBoundingClientRect();
 
-		var settings = {
-			duration: duration,
-			easing: easing,
-			direction: 'alternate',
-			fill: 'backwards'
-		};
+	var srcTransform = getTransformClientRectDiff(srcClientRect, distClientRect);
+	var distTransform = getTransformClientRectDiff(distClientRect, srcClientRect);
 
-		function onEachAfter() {
-			finishedCount++;
-			if (finishedCount == length && callback) {
-				callback();
-			}
+	srcEl.style.transformOrigin = 'center center';
+	distEl.style.transformOrigin = 'center center';
+
+	return {
+		src: {
+			transform: '\n\t\t\t\ttranslate(' + srcTransform.offsetX + 'px, ' + srcTransform.offsetY + 'px)\n\t\t\t\tscale(' + srcTransform.scaleX + ', ' + srcTransform.scaleY + ')\n\t\t\t',
+			opacity: 0
+		},
+		dist: {
+			transform: '\n\t\t\t\ttranslate(' + distTransform.offsetX + 'px, ' + distTransform.offsetY + 'px)\n\t\t\t\tscale(' + distTransform.scaleX + ', ' + distTransform.scaleY + ')\n\t\t\t',
+			opacity: 0
 		}
+	};
+}
 
-		animationList.forEach(function (animation) {
-			var frames = isReverse ? [animation.to, animation.from] : [animation.from, animation.to];
+function fade(src) {
+	return {};
+}
 
-			var player = animation.el.animate(frames, settings);
-			player.onfinish = onEachAfter;
-			//player.pause();
-		});
+function slideLeft(src, dist) {
+	return {
+		src: {
+			transform: 'translate(-100%, 0)',
+			opacity: 0
+		},
+		dist: {
+			transform: 'translate(100%, 0)',
+			opacity: 0
+		}
+	};
+}
+
+function slideRight(src, dist) {
+	return {
+		src: {
+			transform: 'translate(100%, 0)',
+			opacity: 0
+		},
+		dist: {
+			transform: 'translate(-100%, 0)',
+			opacity: 0
+		}
+	};
+}
+
+var transitionEffects = Object.freeze({
+	mix: mix,
+	fade: fade,
+	slideLeft: slideLeft,
+	slideRight: slideRight
+});
+
+function getComputedStyleCssText(style) {
+	var cssText = undefined;
+
+	if (style.cssText != "") {
+		return style.cssText;
 	}
 
-	function getTransformClientRectDiff(aCR, bCR) {
-		return {
-			offsetX: bCR.left + bCR.width / 2 - (aCR.left + aCR.width / 2),
-			offsetY: bCR.top + bCR.height / 2 - (aCR.top + aCR.height / 2),
-			scaleX: bCR.width / aCR.width,
-			scaleY: bCR.height / aCR.height
-		};
+	cssText = "";
+	for (var i = 0; i < style.length; i++) {
+		cssText += style[i] + ": " + style.getPropertyValue(style[i]) + "; ";
 	}
 
-	function createGhostElement(el) {
-		var excludedElList = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+	return cssText;
+}
 
-		function process(_el) {
-			var clone = _el.cloneNode(false);
-			var childNode = _el.childNodes[0];
-			var computedStyle = window.getComputedStyle(_el);
+var GhostElementsBuilder = (function () {
+	function GhostElementsBuilder() {
+		_classCallCheck(this, GhostElementsBuilder);
 
-			clone.setAttribute('data-class', clone.className);
-			clone.removeAttribute('class');
-			clone.removeAttribute('id');
+		this.elementsCount = 0;
+		this.styles = ''; //Object.create(null);
 
-			if (computedStyle.overflow === 'auto' || computedStyle.overflow === 'scroll') {
-				clone.dataset.scrollTop = _el.scrollTop;
-				clone.dataset.scrollLeft = _el.scrollLeft;
-			}
+		/*var computedStyle = window.getComputedStyle(document.body);
+  	for (let i = 0; i < computedStyle.length; i ++) {
+  	let prop = computedStyle[i];
+  	this.styles[prop] = Object.create(null);
+  }*/
 
-			if (childNode && childNode.nodeType === 3 && childNode.textContent.replace(/\s+/g, '') !== '') {
-				clone.textContent = childNode.textContent;
-			}
-
-			for (var i = 0, len = computedStyle.length; i < len; i++) {
-				var prop = computedStyle[i];
-				clone.style[prop] = computedStyle[prop];
-			}
-
-			if (excludedElList.indexOf(_el) !== -1 && excludedElList[excludedElList.indexOf(_el)] !== el) {
-				clone.style.visibility = 'hidden';
-				clone.textContent = '';
-			} else {
-				Array.from(_el.children).forEach(function (childEl) {
-					// if (excludedElList.indexOf(childEl) !== -1) return;
-					clone.appendChild(process(childEl));
-				});
-			}
-
-			return clone;
-		}
-
-		var parent = process(el);
-		var clientRect = el.getBoundingClientRect();
-
-		var styles = {
-			position: 'fixed',
-			width: clientRect.width + 'px',
-			height: clientRect.height + 'px',
-			left: clientRect.left + 'px',
-			top: clientRect.top + 'px',
-			boxSizing: 'border-box',
-			margin: 0,
-			pointerEvents: 'none'
-		};
-
-		Object.keys(styles).forEach(function (style) {
-			parent.style[style] = styles[style];
-		});
-
-		return parent;
+		this.styleEl = document.createElement('style');
+		this.styleEl.type = 'text/css';
+		document.head.appendChild(this.styleEl);
 	}
 
-	var Morph = (function () {
-		_createClass(Morph, null, [{
-			key: 'getDefaultSettings',
-			value: function getDefaultSettings() {
-				return {
-					actionType: 'copy', // copy | move | hide
-					from: {
-						el: null,
-						classHidden: null
-					},
-					to: {
-						el: null,
-						classHidden: null
-					},
-					children: [],
-					duration: 300,
-					easingFunction: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
-					autoClear: true
-				};
-			}
-		}]);
+	_createClass(GhostElementsBuilder, [{
+		key: 'create',
+		value: function create(el) {
+			var _this = this;
 
-		function Morph(settings) {
-			_classCallCheck(this, Morph);
+			var excludedElList = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 
-			this.settings = Object.assign(Morph.getDefaultSettings(), settings);
-			this.createAnimationLayer();
-		}
+			var childElementsCount = 0;
 
-		_createClass(Morph, [{
-			key: 'createAnimationLayer',
-			value: function createAnimationLayer() {
-				var _this = this;
+			var process = function process(_el) {
+				var clone = _el.cloneNode(false);
+				var childNode = _el.childNodes[0];
+				var computedStyle = window.getComputedStyle(_el);
+				var cssClassName = 'el' + _this.elementsCount + childElementsCount;
 
-				if (this.morphEl) return;
+				clone.setAttribute('data-class', clone.className);
+				// clone.removeAttribute('class');
+				clone.className = cssClassName;
+				clone.removeAttribute('id');
 
-				this.morphEl = document.createElement('div');
-				this.morphEl.className = 'morph-container';
+				// clone.style.transformStyle = 'flat';
 
-				var fromObj = this.settings.from;
-				var toObj = this.settings.to;
-				// let { fromObj, toObj } = this.settings;
-				var excludeFromElList = [];
-				var excludeToElList = [];
-
-				this.morphItems = [];
-
-				this.coverTransform = {
-					from: {},
-					to: {}
-				};
-
-				var mainAnimation = {
-					from: {},
-					to: {}
-				};
-
-				if (this.settings.actionType === 'copy') {
-					toObj.el.classList.remove(toObj.classHidden);
-
-					this.coverTransform.from.height = fromObj.el.parentElement.offsetHeight;
-					this.coverTransform.to.height = toObj.el.parentElement.offsetHeight + 10;
-
-					this.settings.children.forEach(function (config) {
-						var fromEl = fromObj.el.querySelector(config.from);
-						var toEl = toObj.el.querySelector(config.to);
-
-						_this.morphItems.push({
-							from: {
-								el: createGhostElement(fromEl)
-							},
-							to: {
-								el: createGhostElement(toEl)
-							}
-						});
-						excludeFromElList.push(fromEl);
-						excludeToElList.push(toEl);
-					});
-
-					mainAnimation.from.el = createGhostElement(fromObj.el, excludeFromElList);
-					mainAnimation.to.el = createGhostElement(toObj.el, excludeToElList);
-
-					toObj.el.classList.add(toObj.classHidden);
-				} else if (this.settings.actionType === 'move') {
-
-					this.settings.children.forEach(function (config) {
-						_this.morphItems.push({
-							from: {},
-							to: {}
-						});
-						excludeFromElList.push(fromObj.el.querySelector(config.from));
-						excludeToElList.push(toObj.el.querySelector(config.to));
-					});
-
-					this.coverTransform.from.height = fromObj.el.parentElement.offsetHeight;
-
-					this.settings.children.forEach(function (config, i) {
-						_this.morphItems[i].from.el = createGhostElement(fromObj.el.querySelector(config.from), excludeFromElList);
-					});
-
-					mainAnimation.from.el = createGhostElement(fromObj.el, excludeFromElList);
-
-					fromObj.el.classList.add(fromObj.classHidden);
-					toObj.el.classList.remove(toObj.classHidden);
-
-					this.coverTransform.to.height = toObj.el.parentElement.offsetHeight;
-
-					this.settings.children.forEach(function (config, i) {
-						_this.morphItems[i].to.el = createGhostElement(toObj.el.querySelector(config.to), excludeToElList);
-					});
-
-					mainAnimation.to.el = createGhostElement(toObj.el, excludeToElList);
-
-					/*this.coverTransform.from.height = fromObj.el.parentElement.offsetHeight;
-     	fromObj.el.classList.add(fromObj.classHidden);
-     toObj.el.classList.remove(toObj.classHidden);
-     	this.coverTransform.to.height = toObj.el.parentElement.offsetHeight;
-     	this.settings.children.forEach((config, i) => {
-     	this.morphItems[i].to.el = createGhostElement(toObj.el.querySelector(config.to), excludeToElList);
-     });
-     	mainAnimation.to.el = createGhostElement(toObj.el, excludeToElList);
-     	fromObj.el.classList.remove(fromObj.classHidden);
-     toObj.el.classList.add(toObj.classHidden);
-     	this.settings.children.forEach((config, i) => {
-     	this.morphItems[i].from.el = createGhostElement(fromObj.el.querySelector(config.from), excludeFromElList);
-     });
-     	mainAnimation.from.el = createGhostElement(fromObj.el, excludeFromElList);*/
+				// Save scroll position
+				if (computedStyle.overflow === 'auto' || computedStyle.overflow === 'scroll') {
+					clone.style.overflow = 'hidden';
+					clone.dataset.scrollTop = _el.scrollTop;
+					clone.dataset.scrollLeft = _el.scrollLeft;
 				}
 
-				console.log(this.morphItems);
-
-				this.morphItems.unshift(mainAnimation);
-
-				this.morphItems.forEach(function (animation) {
-					var el = document.createElement('div');
-					el.className = 'morph-animation';
-					el.appendChild(animation.from.el);
-					el.appendChild(animation.to.el);
-					_this.morphEl.appendChild(el);
-				});
-
-				document.body.appendChild(this.morphEl);
-
-				this.reCalculate();
-
-				this.morphEl.style.display = 'none';
-
-				this.atStart = true;
-
-				/*this.coverAnimationPlayer = fromObj.el.parentElement.animate(
-    	[
-    		{ height: this.coverTransform.fromObj.height + 'px' },
-    		{ height: this.coverTransform.toObj.height + 'px' }
-    	],
-    	playerSettings
-    );*/
-
-				/*this.animationList.push({
-    	el: fromObj.el.parentElement,
-    	fromObj: { height: this.coverTransform.fromObj.height + 'px' },
-    	toObj: { height: this.coverTransform.toObj.height + 'px' }
-    });*/
-
-				console.timeEnd('Morph instantiating');
-			}
-		}, {
-			key: 'reCalculate',
-			value: function reCalculate() {
-				var _this2 = this;
-
-				this.animationList = [];
-
-				this.morphItems.forEach(function (morphItem) {
-					var _fromElClientRect = morphItem.from.el.getBoundingClientRect();
-					var _toElClientRect = morphItem.to.el.getBoundingClientRect();
-
-					var fromTransform = getTransformClientRectDiff(_fromElClientRect, _toElClientRect);
-					var toTransform = getTransformClientRectDiff(_toElClientRect, _fromElClientRect);
-
-					morphItem.from.el.style.transformOrigin = 'center center';
-					morphItem.to.el.style.transformOrigin = 'center center';
-
-					_this2.animationList.push({
-						el: morphItem.from.el,
-						from: {
-							transform: 'translate(0, 0) scale(1, 1)',
-							opacity: 1
-						},
-						to: {
-							transform: '\n\t\t\t\t\t\t\ttranslate(' + fromTransform.offsetX + 'px, ' + fromTransform.offsetY + 'px)\n\t\t\t\t\t\t\tscale(' + fromTransform.scaleX + ', ' + fromTransform.scaleY + ')\n\t\t\t\t\t\t',
-							opacity: 0
-						}
-					});
-
-					_this2.animationList.push({
-						el: morphItem.to.el,
-						from: {
-							transform: '\n\t\t\t\t\t\t\ttranslate(' + toTransform.offsetX + 'px, ' + toTransform.offsetY + 'px)\n\t\t\t\t\t\t\tscale(' + toTransform.scaleX + ', ' + toTransform.scaleY + ')\n\t\t\t\t\t\t',
-							opacity: 0
-						},
-						to: {
-							transform: 'translate(0, 0) scale(1, 1)',
-							opacity: 1
-						}
-					});
-				});
-			}
-		}, {
-			key: '_fixScrollPosition',
-			value: function _fixScrollPosition() {
-				function eachChild(el) {
-					if (el.dataset.scrollTop) {
-						el.scrollTop = el.dataset.scrollTop;
-					}
-
-					if (el.dataset.scrollLeft) {
-						el.scrollLeft = el.dataset.scrollLeft;
-					}
-
-					Array.from(el.children).forEach(function (childEl) {
-						eachChild(childEl);
-					});
+				if (childNode && childNode.nodeType === 3 && childNode.textContent.replace(/\s+/g, '') !== '') {
+					clone.textContent = childNode.textContent;
 				}
-				this.animationList.forEach(function (animation) {
-					eachChild(animation.el);
-				});
-			}
-		}, {
-			key: 'animate',
-			value: function animate(callback) {
-				var _this3 = this;
 
-				if (this._isAnimating || !this.atStart) return;
+				/*for (let i = 0; i < computedStyle.length; i ++) {
+    	let prop = computedStyle[i];
+    	let value = computedStyle[prop];
+    		if (this.styles[prop][value]) {
+    		this.styles[prop][value] += (', .' + cssClassName);
+    	} else {
+    		this.styles[prop][value] = '.' + cssClassName;
+    	}
+    }*/
 
-				this._isAnimating = true;
-				this.morphEl.style.display = 'block';
+				_this.styles += '.' + cssClassName + ' { ' + getComputedStyleCssText(computedStyle) + ' }';
 
-				this._fixScrollPosition();
+				childElementsCount++;
 
-				this.settings.from.el.parentElement.style.height = this.settings.from.el.parentElement.clientHeight + 'px';
-
-				//this.settings.from.el.classList.add(this.settings.from.classHidden);
-
-				animateElements(this.animationList, this.settings.duration, this.settings.easingFunction, function () {
-					_this3.settings.to.el.classList.remove(_this3.settings.to.classHidden);
-
-					//this.settings.from.el.classList.remove(this.settings.from.classHidden);
-					_this3.settings.from.el.parentElement.style.height = '';
-
-					if (_this3.settings.actionType === 'move') {
-						_this3.settings.from.el.classList.add(_this3.settings.from.classHidden);
+				if (excludedElList.indexOf(_el) !== -1 && excludedElList[excludedElList.indexOf(_el)] !== el) {
+					clone.style.visibility = 'hidden';
+					clone.textContent = '';
+				} else {
+					for (var i = 0; i < _el.children.length; i++) {
+						// if (excludedElList.indexOf(childEl) !== -1) return;
+						clone.appendChild(process(_el.children[i]));
 					}
+					/*Array.from(_el.children).forEach(childEl => {
+      // if (excludedElList.indexOf(childEl) !== -1) return;
+      clone.appendChild(process(childEl));
+      });*/
+				}
 
-					_this3.morphEl.style.display = 'none';
-					_this3._isAnimating = false;
-					_this3.atStart = false;
+				return clone;
+			};
 
-					if (_this3.settings.autoClear) {
-						_this3.clear();
-					}
+			console.time('timer');
 
-					if (callback) {
-						callback();
-					}
-				});
-			}
-		}, {
-			key: 'reverse',
-			value: function reverse() {
-				var _this4 = this;
+			var parent = process(el);
 
-				if (this._isAnimating || this.atStart) return;
+			console.time('timer2');
+			this.styleEl.textContent = this.styles;
+			console.timeEnd('timer2');
 
-				this._isAnimating = true;
-				this.morphEl.style.display = 'block';
-				this.settings.to.el.classList.add(this.settings.to.classHidden);
+			console.time('timer3');
+			var clientRect = el.getBoundingClientRect();
 
-				animateElements(this.animationList, this.settings.duration, this.settings.easingFunction, function () {
-					_this4.settings.from.el.classList.remove(_this4.settings.from.classHidden);
-					_this4.morphEl.style.display = 'none';
-					_this4._isAnimating = false;
-					_this4.atStart = true;
-				}, true);
-			}
-		}, {
-			key: 'clear',
-			value: function clear() {
-				this.morphEl.remove();
-			}
-		}, {
-			key: 'isAnimating',
-			value: function isAnimating() {
-				return this._isAnimating;
-			}
-		}]);
+			var styles = {
+				position: 'absolute',
+				width: clientRect.width + 'px',
+				height: clientRect.height + 'px',
+				left: clientRect.left + 'px',
+				top: clientRect.top + 'px',
+				boxSizing: 'border-box',
+				margin: 0,
+				pointerEvents: 'none'
+			};
 
-		return Morph;
-	})();
+			Object.keys(styles).forEach(function (style) {
+				parent.style[style] = styles[style];
+			});
+			console.timeEnd('timer3');
 
-	window.Morph = Morph;
+			console.timeEnd('timer');
+
+			this.elementsCount++;
+
+			return parent;
+		}
+	}, {
+		key: 'createStyles',
+		value: function createStyles() {}
+	}, {
+		key: 'clear',
+		value: function clear() {
+			document.head.removeChild(this.styleEl);
+		}
+	}]);
+
+	return GhostElementsBuilder;
 })();
+
+function animateElements(animationList, duration, easing, callback, isReverse) {
+	var settings = {
+		duration: duration,
+		easing: easing,
+		direction: 'alternate',
+		fill: 'backwards'
+	};
+
+	var keyframeEffects = animationList.map(function (animation) {
+		var frames = isReverse ? [animation.to, animation.from] : [animation.from, animation.to];
+		return new KeyframeEffect(animation.el, frames, settings);
+	});
+
+	var groupEffect = new GroupEffect(keyframeEffects);
+	var player = document.timeline.play(groupEffect);
+
+	if (callback) {
+		player.onfinish = callback;
+	}
+}
+
+var Morph = (function () {
+	_createClass(Morph, null, [{
+		key: 'getDefaultSettings',
+		value: function getDefaultSettings() {
+			return {
+				type: 'copy', // copy | move | hide
+				src: {
+					el: null,
+					classHidden: null
+				},
+				dist: {
+					el: null,
+					classHidden: null
+				},
+				partials: [],
+				context: document.body,
+				duration: 300,
+				easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
+				autoClear: true
+			};
+		}
+	}]);
+
+	function Morph(settings) {
+		_classCallCheck(this, Morph);
+
+		console.time('constructor');
+		this.settings = Object.assign(Morph.getDefaultSettings(), settings);
+		this.ghostElementsBuilder = new GhostElementsBuilder();
+		this.morphEl = document.createElement('div');
+		this.morphEl.className = 'morph-container';
+
+		this.init();
+		console.timeEnd('constructor');
+	}
+
+	_createClass(Morph, [{
+		key: 'init',
+		value: function init() {
+			var _this2 = this;
+
+			var src = this.settings.src;
+			var dist = this.settings.dist;
+
+			var excludeSrcElList = [];
+			var excludeDistElList = [];
+
+			this.morphItems = [];
+
+			var partials = this.settings.partials.map(function (setting) {
+				return {
+					srcEl: src.el.querySelector(setting.src),
+					distEl: dist.el.querySelector(setting.dist)
+				};
+			});
+
+			partials.forEach(function (partial) {
+				var morphItem = {
+					src: {},
+					dist: {}
+				};
+				_this2.morphItems.push(morphItem);
+				excludeSrcElList.push(partial.srcEl);
+				excludeDistElList.push(partial.distEl);
+			});
+
+			/*this.coverTransform = {
+   	src: {},
+   	dist: {}
+   };*/
+
+			var mainMorph = {
+				src: {},
+				dist: {}
+			};
+
+			if (this.settings.type === 'copy') {
+				dist.el.classList.remove(dist.classHidden);
+
+				// this.coverTransform.src.height = src.el.parentElement.offsetHeight;
+				// this.coverTransform.dist.height = dist.el.parentElement.offsetHeight + 10;
+
+				partials.forEach(function (partial, i) {
+					var morphItem = _this2.morphItems[i];
+					morphItem.src.el = _this2.ghostElementsBuilder.create(partial.srcEl);
+					morphItem.dist.el = _this2.ghostElementsBuilder.create(partial.distEl);
+				});
+
+				mainMorph.src.el = this.ghostElementsBuilder.create(src.el, excludeSrcElList);
+				mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
+
+				dist.el.classList.add(dist.classHidden);
+			} else if (this.settings.type === 'move') {
+
+				// this.coverTransform.src.height = src.el.parentElement.offsetHeight;
+
+				partials.forEach(function (partial, i) {
+					_this2.morphItems[i].src.el = _this2.ghostElementsBuilder.create(partial.srcEl, excludeSrcElList);
+				});
+
+				mainMorph.src.el = this.ghostElementsBuilder.create(src.el, excludeSrcElList);
+
+				src.el.classList.add(src.classHidden);
+				dist.el.classList.remove(dist.classHidden);
+
+				// this.coverTransform.dist.height = dist.el.parentElement.offsetHeight;
+
+				partials.forEach(function (partial, i) {
+					_this2.morphItems[i].dist.el = _this2.ghostElementsBuilder.create(partial.distEl, excludeDistElList);
+				});
+
+				mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
+			}
+
+			this.morphItems.unshift(mainMorph);
+
+			this.morphItems.forEach(function (morphItem) {
+				var el = document.createElement('div');
+				el.className = 'morph-animation';
+				el.appendChild(morphItem.src.el);
+				el.appendChild(morphItem.dist.el);
+				_this2.morphEl.appendChild(el);
+			});
+
+			this.settings.context.appendChild(this.morphEl);
+
+			this.reCalculate();
+
+			this.morphEl.style.display = 'none';
+
+			this.atStart = true;
+
+			/*this.coverAnimationPlayer = fromObj.el.parentElement.animate(
+   	[
+   		{ height: this.coverTransform.fromObj.height + 'px' },
+   		{ height: this.coverTransform.toObj.height + 'px' }
+   	],
+   	playerSettings
+   );*/
+
+			/*this.animationList.push({
+   	el: fromObj.el.parentElement,
+   	fromObj: { height: this.coverTransform.fromObj.height + 'px' },
+   	toObj: { height: this.coverTransform.toObj.height + 'px' }
+   });*/
+		}
+	}, {
+		key: 'reCalculate',
+		value: function reCalculate() {
+			var _this3 = this;
+
+			this.animationList = [];
+
+			this.morphItems.forEach(function (morphItem) {
+				var srcEl = morphItem.src.el;
+				var distEl = morphItem.dist.el;
+
+				var effectFn = Morph.effects.mix;
+				var effect = undefined;
+
+				var srcAnimation = {};
+				var distAnimation = {};
+
+				if ('effect' in morphItem) {
+					if (typeof morphItem.effect === 'string' && morphItem.effect in Morph.effects) {
+						effectFn = Morph.effects[morphItem.effect];
+					} else if (typeof morphItem.effect === 'function') {
+						effectFn = morphItem.effect;
+					} else {
+						throw new Error('effect param must be string or function');
+					}
+				}
+
+				effect = effectFn(srcEl, distEl);
+
+				srcAnimation.from = {};
+				srcAnimation.to = effect.src;
+				Object.keys(effect.src).forEach(function (cssProp) {
+					srcAnimation.from[cssProp] = window.getComputedStyle(srcEl).getPropertyValue(cssProp);
+				});
+
+				distAnimation.from = effect.dist;
+				distAnimation.to = {};
+				Object.keys(effect.dist).forEach(function (cssProp) {
+					distAnimation.to[cssProp] = window.getComputedStyle(srcEl).getPropertyValue(cssProp);
+				});
+
+				_this3.animationList.push({
+					el: srcEl,
+					from: srcAnimation.from,
+					to: srcAnimation.to
+				}, {
+					el: distEl,
+					from: distAnimation.from,
+					to: distAnimation.to
+				});
+			});
+		}
+	}, {
+		key: '_fixScrollPosition',
+		value: function _fixScrollPosition() {
+			function eachChild(el) {
+				if (el.dataset.scrollTop) {
+					el.scrollTop = el.dataset.scrollTop;
+				}
+
+				if (el.dataset.scrollLeft) {
+					el.scrollLeft = el.dataset.scrollLeft;
+				}
+
+				Array.from(el.children).forEach(eachChild);
+			}
+
+			this.animationList.forEach(function (animation) {
+				eachChild(animation.el);
+			});
+		}
+	}, {
+		key: 'animate',
+		value: function animate(callback) {
+			var _this4 = this;
+
+			if (this._isAnimating || !this.atStart) return;
+
+			this._isAnimating = true;
+			this.morphEl.style.display = 'block';
+
+			this._fixScrollPosition();
+
+			this.settings.src.el.parentElement.style.height = this.settings.src.el.parentElement.clientHeight + 'px';
+
+			//this.settings.from.el.classList.add(this.settings.from.classHidden);
+			this.settings.dist.el.classList.add(this.settings.dist.classHidden);
+
+			animateElements(this.animationList, this.settings.duration, this.settings.easingFunction, function () {
+				_this4.settings.dist.el.classList.remove(_this4.settings.dist.classHidden);
+
+				//this.settings.from.el.classList.remove(this.settings.from.classHidden);
+				_this4.settings.src.el.parentElement.style.height = '';
+
+				if (_this4.settings.actionType === 'move') {
+					_this4.settings.src.el.classList.add(_this4.settings.src.classHidden);
+				}
+
+				_this4.morphEl.style.display = 'none';
+				_this4._isAnimating = false;
+				_this4.atStart = false;
+
+				if (_this4.settings.autoClear) {
+					_this4.clear();
+				}
+
+				if (callback) {
+					callback();
+				}
+			});
+		}
+	}, {
+		key: 'reverse',
+		value: function reverse() {
+			var _this5 = this;
+
+			if (this._isAnimating || this.atStart) return;
+
+			this._isAnimating = true;
+			this.morphEl.style.display = 'block';
+			this.settings.dist.el.classList.add(this.settings.dist.classHidden);
+
+			animateElements(this.animationList, this.settings.duration, this.settings.easingFunction, function () {
+				_this5.settings.src.el.classList.remove(_this5.settings.src.classHidden);
+				_this5.morphEl.style.display = 'none';
+				_this5._isAnimating = false;
+				_this5.atStart = true;
+			}, true);
+		}
+	}, {
+		key: 'clear',
+		value: function clear() {
+			this.settings.context.removeChild(this.morphEl);
+			this.ghostElementsBuilder.clear();
+		}
+	}, {
+		key: 'isAnimating',
+		value: function isAnimating() {
+			return this._isAnimating;
+		}
+	}]);
+
+	return Morph;
+})();
+
+Morph.effects = transitionEffects;
+
+if (!Object.assign) {
+	Object.defineProperty(Object, 'assign', {
+		enumerable: false,
+		configurable: true,
+		writable: true,
+		value: function value(target, firstSource) {
+			'use strict';
+			if (target === undefined || target === null) {
+				throw new TypeError('Cannot convert first argument to object');
+			}
+
+			var to = Object(target);
+			for (var i = 1; i < arguments.length; i++) {
+				var nextSource = arguments[i];
+				if (nextSource === undefined || nextSource === null) {
+					continue;
+				}
+
+				var keysArray = Object.keys(Object(nextSource));
+				for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+					var nextKey = keysArray[nextIndex];
+					var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
+					if (desc !== undefined && desc.enumerable) {
+						to[nextKey] = nextSource[nextKey];
+					}
+				}
+			}
+			return to;
+		}
+	});
+}
+
+if (!Array.from) {
+	Object.defineProperty(Array, 'from', {
+		value: function value(object) {
+			'use strict';
+			return Array.prototype.slice.call(object);
+		},
+		configurable: true,
+		writable: true
+	});
+}
+
+window.Morph = Morph;
