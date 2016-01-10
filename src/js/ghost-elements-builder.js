@@ -1,38 +1,40 @@
-import createCSSClass from './create-css-class';
-
+// import defaultStyles from './default-computed-styles';
 
 function getComputedStyleCssText(style) {
-	let cssText;
-
-	if (style.cssText != "") {
+	let cssText = '';
+	if (style.cssText != '') {
 		return style.cssText;
 	}
-
-	cssText = "";
-	for (var i = 0; i < style.length; i++) {
+	for (let i = 0; i < style.length; i++) {
 		cssText += style[i] + ": " + style.getPropertyValue(style[i]) + "; ";
 	}
-
 	return cssText;
 }
 
+let isIE = 'currentStyle' in HTMLElement.prototype;
+let defaultStyles = {};
 
 export default class GhostElementsBuilder {
 
 	constructor() {
 		this.elementsCount = 0;
-		this.styles = ''; //Object.create(null);
-
-		/*var computedStyle = window.getComputedStyle(document.body);
-
-		for (let i = 0; i < computedStyle.length; i ++) {
-			let prop = computedStyle[i];
-			this.styles[prop] = Object.create(null);
-		}*/
-
+		this.styles = '';
 		this.styleEl = document.createElement('style');
 		this.styleEl.type = 'text/css';
 		document.head.appendChild(this.styleEl);
+
+		if (isIE) {
+			let div = document.createElement('div');
+			let fragment = document.createDocumentFragment();
+			fragment.appendChild(div);
+			let styles = window.getComputedStyle(div);
+			// let styles = div.currentStyle;
+			for (let i = 0; i < styles.length; i ++) {
+				let prop = styles[i];
+				let value = styles[prop];
+				defaultStyles[prop] = value;
+			}
+		}
 	}
 
 	create(el, excludedElList = []) {
@@ -62,18 +64,21 @@ export default class GhostElementsBuilder {
 				clone.textContent = childNode.textContent;
 			}
 
-			/*for (let i = 0; i < computedStyle.length; i ++) {
-				let prop = computedStyle[i];
-				let value = computedStyle[prop];
-
-				if (this.styles[prop][value]) {
-					this.styles[prop][value] += (', .' + cssClassName);
-				} else {
-					this.styles[prop][value] = '.' + cssClassName;
+			if (isIE) {
+				let styles = '';
+				let count = 0;
+				for (let i = 0; i < computedStyle.length; i ++) {
+					let prop = computedStyle[i];
+					let value = computedStyle[prop];
+					if (defaultStyles[prop] !== value) {
+						count ++;
+						styles += `${prop}: ${value}; `;
+					}
 				}
-			}*/
-
-			this.styles += `.${cssClassName} { ${getComputedStyleCssText(computedStyle)} }`;
+				this.styles += `.${cssClassName} { ${styles} }`;
+			} else {
+				this.styles += `.${cssClassName} { ${getComputedStyleCssText(computedStyle)} }`;
+			}
 
 			childElementsCount ++;
 
@@ -94,15 +99,10 @@ export default class GhostElementsBuilder {
 			return clone;
 		};
 
-		console.time('timer');
+		// console.time('timer');
 
 		let parent = process(el);
 
-		console.time('timer2');
-		this.styleEl.textContent = this.styles;
-		console.timeEnd('timer2');
-
-		console.time('timer3');
 		let clientRect = el.getBoundingClientRect();
 
 		let styles = {
@@ -119,18 +119,16 @@ export default class GhostElementsBuilder {
 		Object.keys(styles).forEach(style => {
 			parent.style[style] = styles[style];
 		});
-		console.timeEnd('timer3');
 
-		console.timeEnd('timer');
+		// console.timeEnd('timer');
 
 		this.elementsCount ++;
 
 		return parent;
-
 	}
 
-	createStyles() {
-
+	applyStyles() {
+		this.styleEl.textContent = this.styles;
 	}
 
 	clear() {

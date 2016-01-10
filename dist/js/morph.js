@@ -72,37 +72,44 @@ var transitionEffects = Object.freeze({
 	slideRight: slideRight
 });
 
-function getComputedStyleCssText(style) {
-	var cssText = undefined;
+// import defaultStyles from './default-computed-styles';
 
-	if (style.cssText != "") {
+function getComputedStyleCssText(style) {
+	var cssText = '';
+	if (style.cssText != '') {
 		return style.cssText;
 	}
-
-	cssText = "";
 	for (var i = 0; i < style.length; i++) {
 		cssText += style[i] + ": " + style.getPropertyValue(style[i]) + "; ";
 	}
-
 	return cssText;
 }
+
+var isIE = ('currentStyle' in HTMLElement.prototype);
+var defaultStyles = {};
 
 var GhostElementsBuilder = (function () {
 	function GhostElementsBuilder() {
 		_classCallCheck(this, GhostElementsBuilder);
 
 		this.elementsCount = 0;
-		this.styles = ''; //Object.create(null);
-
-		/*var computedStyle = window.getComputedStyle(document.body);
-  	for (let i = 0; i < computedStyle.length; i ++) {
-  	let prop = computedStyle[i];
-  	this.styles[prop] = Object.create(null);
-  }*/
-
+		this.styles = '';
 		this.styleEl = document.createElement('style');
 		this.styleEl.type = 'text/css';
 		document.head.appendChild(this.styleEl);
+
+		if (isIE) {
+			var div = document.createElement('div');
+			var fragment = document.createDocumentFragment();
+			fragment.appendChild(div);
+			var styles = window.getComputedStyle(div);
+			// let styles = div.currentStyle;
+			for (var i = 0; i < styles.length; i++) {
+				var prop = styles[i];
+				var value = styles[prop];
+				defaultStyles[prop] = value;
+			}
+		}
 	}
 
 	_createClass(GhostElementsBuilder, [{
@@ -138,17 +145,21 @@ var GhostElementsBuilder = (function () {
 					clone.textContent = childNode.textContent;
 				}
 
-				/*for (let i = 0; i < computedStyle.length; i ++) {
-    	let prop = computedStyle[i];
-    	let value = computedStyle[prop];
-    		if (this.styles[prop][value]) {
-    		this.styles[prop][value] += (', .' + cssClassName);
-    	} else {
-    		this.styles[prop][value] = '.' + cssClassName;
-    	}
-    }*/
-
-				_this.styles += '.' + cssClassName + ' { ' + getComputedStyleCssText(computedStyle) + ' }';
+				if (isIE) {
+					var _styles = '';
+					var count = 0;
+					for (var i = 0; i < computedStyle.length; i++) {
+						var prop = computedStyle[i];
+						var value = computedStyle[prop];
+						if (defaultStyles[prop] !== value) {
+							count++;
+							_styles += prop + ': ' + value + '; ';
+						}
+					}
+					_this.styles += '.' + cssClassName + ' { ' + _styles + ' }';
+				} else {
+					_this.styles += '.' + cssClassName + ' { ' + getComputedStyleCssText(computedStyle) + ' }';
+				}
 
 				childElementsCount++;
 
@@ -169,15 +180,10 @@ var GhostElementsBuilder = (function () {
 				return clone;
 			};
 
-			console.time('timer');
+			// console.time('timer');
 
 			var parent = process(el);
 
-			console.time('timer2');
-			this.styleEl.textContent = this.styles;
-			console.timeEnd('timer2');
-
-			console.time('timer3');
 			var clientRect = el.getBoundingClientRect();
 
 			var styles = {
@@ -194,17 +200,18 @@ var GhostElementsBuilder = (function () {
 			Object.keys(styles).forEach(function (style) {
 				parent.style[style] = styles[style];
 			});
-			console.timeEnd('timer3');
 
-			console.timeEnd('timer');
+			// console.timeEnd('timer');
 
 			this.elementsCount++;
 
 			return parent;
 		}
 	}, {
-		key: 'createStyles',
-		value: function createStyles() {}
+		key: 'applyStyles',
+		value: function applyStyles() {
+			this.styleEl.textContent = this.styles;
+		}
 	}, {
 		key: 'clear',
 		value: function clear() {
@@ -349,6 +356,8 @@ var Morph = (function () {
 
 				mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
 			}
+
+			this.ghostElementsBuilder.applyStyles();
 
 			this.morphItems.unshift(mainMorph);
 

@@ -111,6 +111,8 @@ export default class Morph {
 			mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
 		}
 
+		this.ghostElementsBuilder.applyStyles();
+
 		this.morphItems.unshift(mainMorph);
 
 		this.morphItems.forEach(morphItem => {
