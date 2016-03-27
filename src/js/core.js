@@ -1,13 +1,30 @@
 import GhostElementsBuilder from './ghost-elements-builder';
-import getTransformClientRectDiff from './get-transform-diff';
+// import getTransformClientRectDiff from './get-transform-diff';
 import animateElements from './animate-elements';
 import * as transitionEffects from './transitionEffects';
 
+let defaultSettings = {
+	type: 'copy',
+	src: {
+		el: null,
+		classHidden: null
+	},
+	dist: {
+		el: null,
+		classHidden: null
+	},
+	partials: [],
+	context: null,
+	duration: 300,
+	easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
+	autoClear: false
+};
+
 export default class Morph {
 
-	static getDefaultSettings() {
+	/*static getDefaultSettings() {
 		return {
-			type: 'copy', // copy | move | hide
+			type: 'copy', // copy | move
 			src: {
 				el: null,
 				classHidden: null
@@ -20,17 +37,16 @@ export default class Morph {
 			context: document.body,
 			duration: 300,
 			easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
-			autoClear: true
+			autoClear: false
 		}
-	}
+	}*/
 
 	constructor(settings) {
 		console.time('constructor');
-		this.settings = Object.assign(Morph.getDefaultSettings(), settings);
+		this.settings = Object.assign({}, defaultSettings, { context: document.body }, settings);
 		this.ghostElementsBuilder = new GhostElementsBuilder();
 		this.morphEl = document.createElement('div');
 		this.morphEl.className = 'morph-container';
-
 		this.init();
 		console.timeEnd('constructor');
 	}

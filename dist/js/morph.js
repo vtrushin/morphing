@@ -98,18 +98,20 @@ var GhostElementsBuilder = (function () {
 		this.styleEl.type = 'text/css';
 		document.head.appendChild(this.styleEl);
 
-		if (isIE) {
-			var div = document.createElement('div');
-			var fragment = document.createDocumentFragment();
-			fragment.appendChild(div);
-			var styles = window.getComputedStyle(div);
-			// let styles = div.currentStyle;
-			for (var i = 0; i < styles.length; i++) {
-				var prop = styles[i];
-				var value = styles[prop];
-				defaultStyles[prop] = value;
-			}
+		//if (isIE) {
+		console.log(222);
+
+		var div = document.createElement('div');
+		var fragment = document.createDocumentFragment();
+		fragment.appendChild(div);
+		var styles = window.getComputedStyle(div);
+		// let styles = div.currentStyle;
+		for (var i = 0; i < styles.length; i++) {
+			var prop = styles[i];
+			var value = styles[prop];
+			defaultStyles[prop] = value;
 		}
+		//}
 	}
 
 	_createClass(GhostElementsBuilder, [{
@@ -243,38 +245,52 @@ function animateElements(animationList, duration, easing, callback, isReverse) {
 	}
 }
 
+var defaultSettings = {
+	type: 'copy',
+	src: {
+		el: null,
+		classHidden: null
+	},
+	dist: {
+		el: null,
+		classHidden: null
+	},
+	partials: [],
+	context: null,
+	duration: 300,
+	easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
+	autoClear: false
+};
+
 var Morph = (function () {
-	_createClass(Morph, null, [{
-		key: 'getDefaultSettings',
-		value: function getDefaultSettings() {
-			return {
-				type: 'copy', // copy | move | hide
-				src: {
-					el: null,
-					classHidden: null
-				},
-				dist: {
-					el: null,
-					classHidden: null
-				},
-				partials: [],
-				context: document.body,
-				duration: 300,
-				easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
-				autoClear: true
-			};
-		}
-	}]);
+
+	/*static getDefaultSettings() {
+ 	return {
+ 		type: 'copy', // copy | move
+ 		src: {
+ 			el: null,
+ 			classHidden: null
+ 		},
+ 		dist: {
+ 			el: null,
+ 			classHidden: null
+ 		},
+ 		partials: [],
+ 		context: document.body,
+ 		duration: 300,
+ 		easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
+ 		autoClear: false
+ 	}
+ }*/
 
 	function Morph(settings) {
 		_classCallCheck(this, Morph);
 
 		console.time('constructor');
-		this.settings = Object.assign(Morph.getDefaultSettings(), settings);
+		this.settings = Object.assign({}, defaultSettings, { context: document.body }, settings);
 		this.ghostElementsBuilder = new GhostElementsBuilder();
 		this.morphEl = document.createElement('div');
 		this.morphEl.className = 'morph-container';
-
 		this.init();
 		console.timeEnd('constructor');
 	}

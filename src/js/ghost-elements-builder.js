@@ -23,7 +23,9 @@ export default class GhostElementsBuilder {
 		this.styleEl.type = 'text/css';
 		document.head.appendChild(this.styleEl);
 
-		if (isIE) {
+		//if (isIE) {
+			console.log(222);
+
 			let div = document.createElement('div');
 			let fragment = document.createDocumentFragment();
 			fragment.appendChild(div);
@@ -34,7 +36,7 @@ export default class GhostElementsBuilder {
 				let value = styles[prop];
 				defaultStyles[prop] = value;
 			}
-		}
+		//}
 	}
 
 	create(el, excludedElList = []) {
