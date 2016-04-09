@@ -37,8 +37,8 @@ gulp.task('jade', function(){
 	gulp.src(jadePath)
 		.pipe(jade({
 			pretty: '\t'
-		}))
-		.on('error', handleErrors)
+		})
+			.on('error', handleErrors))
 		.pipe(gulp.dest(dist + '/'));
 });
 
@@ -58,9 +58,10 @@ gulp.task('es6', function(){
 	gulp.src(es6Path)
 		.pipe(rollup(/*{
 			format: 'iife'
-		}*/))
-		.pipe(babel())
-		.on('error', handleErrors)
+		}*/)
+			.on('error', handleErrors))
+		.pipe(babel()
+			.on('error', handleErrors))
 		.pipe(gulp.dest(distJsPath))
 });
 
