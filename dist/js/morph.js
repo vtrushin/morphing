@@ -4,73 +4,48 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-function getTransformClientRectDiff(aCR, bCR) {
-	return {
-		offsetX: bCR.left + bCR.width / 2 - (aCR.left + aCR.width / 2),
-		offsetY: bCR.top + bCR.height / 2 - (aCR.top + aCR.height / 2),
-		scaleX: bCR.width / aCR.width,
-		scaleY: bCR.height / aCR.height
-	};
-}
+if (!Object.assign) {
+	Object.defineProperty(Object, 'assign', {
+		enumerable: false,
+		configurable: true,
+		writable: true,
+		value: function value(target, firstSource) {
+			'use strict';
+			if (target === undefined || target === null) {
+				throw new TypeError('Cannot convert first argument to object');
+			}
 
-function mix(srcEl, distEl) {
-	var srcClientRect = srcEl.getBoundingClientRect();
-	var distClientRect = distEl.getBoundingClientRect();
+			var to = Object(target);
+			for (var i = 1; i < arguments.length; i++) {
+				var nextSource = arguments[i];
+				if (nextSource === undefined || nextSource === null) {
+					continue;
+				}
 
-	var srcTransform = getTransformClientRectDiff(srcClientRect, distClientRect);
-	var distTransform = getTransformClientRectDiff(distClientRect, srcClientRect);
-
-	srcEl.style.transformOrigin = 'center center';
-	distEl.style.transformOrigin = 'center center';
-
-	return {
-		src: {
-			transform: '\n\t\t\t\ttranslate(' + srcTransform.offsetX + 'px, ' + srcTransform.offsetY + 'px)\n\t\t\t\tscale(' + srcTransform.scaleX + ', ' + srcTransform.scaleY + ')\n\t\t\t',
-			opacity: 0
-		},
-		dist: {
-			transform: '\n\t\t\t\ttranslate(' + distTransform.offsetX + 'px, ' + distTransform.offsetY + 'px)\n\t\t\t\tscale(' + distTransform.scaleX + ', ' + distTransform.scaleY + ')\n\t\t\t',
-			opacity: 0
+				var keysArray = Object.keys(Object(nextSource));
+				for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+					var nextKey = keysArray[nextIndex];
+					var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
+					if (desc !== undefined && desc.enumerable) {
+						to[nextKey] = nextSource[nextKey];
+					}
+				}
+			}
+			return to;
 		}
-	};
+	});
 }
 
-function fade(src) {
-	return {};
-}
-
-function slideLeft(src, dist) {
-	return {
-		src: {
-			transform: 'translate(-100%, 0)',
-			opacity: 0
+if (!Array.from) {
+	Object.defineProperty(Array, 'from', {
+		value: function value(object) {
+			'use strict';
+			return Array.prototype.slice.call(object);
 		},
-		dist: {
-			transform: 'translate(100%, 0)',
-			opacity: 0
-		}
-	};
+		configurable: true,
+		writable: true
+	});
 }
-
-function slideRight(src, dist) {
-	return {
-		src: {
-			transform: 'translate(100%, 0)',
-			opacity: 0
-		},
-		dist: {
-			transform: 'translate(-100%, 0)',
-			opacity: 0
-		}
-	};
-}
-
-var transitionEffects = Object.freeze({
-	mix: mix,
-	fade: fade,
-	slideLeft: slideLeft,
-	slideRight: slideRight
-});
 
 // import defaultStyles from './default-computed-styles';
 
@@ -244,6 +219,74 @@ function animateElements(animationList, duration, easing, callback, isReverse) {
 		player.onfinish = callback;
 	}
 }
+
+function getTransformClientRectDiff(aCR, bCR) {
+	return {
+		offsetX: bCR.left + bCR.width / 2 - (aCR.left + aCR.width / 2),
+		offsetY: bCR.top + bCR.height / 2 - (aCR.top + aCR.height / 2),
+		scaleX: bCR.width / aCR.width,
+		scaleY: bCR.height / aCR.height
+	};
+}
+
+function mix(srcEl, distEl) {
+	var srcClientRect = srcEl.getBoundingClientRect();
+	var distClientRect = distEl.getBoundingClientRect();
+
+	var srcTransform = getTransformClientRectDiff(srcClientRect, distClientRect);
+	var distTransform = getTransformClientRectDiff(distClientRect, srcClientRect);
+
+	srcEl.style.transformOrigin = 'center center';
+	distEl.style.transformOrigin = 'center center';
+
+	return {
+		src: {
+			transform: '\n\t\t\t\ttranslate(' + srcTransform.offsetX + 'px, ' + srcTransform.offsetY + 'px)\n\t\t\t\tscale(' + srcTransform.scaleX + ', ' + srcTransform.scaleY + ')\n\t\t\t',
+			opacity: 0
+		},
+		dist: {
+			transform: '\n\t\t\t\ttranslate(' + distTransform.offsetX + 'px, ' + distTransform.offsetY + 'px)\n\t\t\t\tscale(' + distTransform.scaleX + ', ' + distTransform.scaleY + ')\n\t\t\t',
+			opacity: 0
+		}
+	};
+}
+
+function fade(src) {
+	return {};
+}
+
+function slideLeft(src, dist) {
+	return {
+		src: {
+			transform: 'translate(-100%, 0)',
+			opacity: 0
+		},
+		dist: {
+			transform: 'translate(100%, 0)',
+			opacity: 0
+		}
+	};
+}
+
+function slideRight(src, dist) {
+	return {
+		src: {
+			transform: 'translate(100%, 0)',
+			opacity: 0
+		},
+		dist: {
+			transform: 'translate(-100%, 0)',
+			opacity: 0
+		}
+	};
+}
+
+var transitionEffects = Object.freeze({
+	mix: mix,
+	fade: fade,
+	slideLeft: slideLeft,
+	slideRight: slideRight
+});
 
 var defaultSettings = {
 	type: 'copy',
@@ -553,48 +596,5 @@ var Morph = (function () {
 })();
 
 Morph.effects = transitionEffects;
-
-if (!Object.assign) {
-	Object.defineProperty(Object, 'assign', {
-		enumerable: false,
-		configurable: true,
-		writable: true,
-		value: function value(target, firstSource) {
-			'use strict';
-			if (target === undefined || target === null) {
-				throw new TypeError('Cannot convert first argument to object');
-			}
-
-			var to = Object(target);
-			for (var i = 1; i < arguments.length; i++) {
-				var nextSource = arguments[i];
-				if (nextSource === undefined || nextSource === null) {
-					continue;
-				}
-
-				var keysArray = Object.keys(Object(nextSource));
-				for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
-					var nextKey = keysArray[nextIndex];
-					var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
-					if (desc !== undefined && desc.enumerable) {
-						to[nextKey] = nextSource[nextKey];
-					}
-				}
-			}
-			return to;
-		}
-	});
-}
-
-if (!Array.from) {
-	Object.defineProperty(Array, 'from', {
-		value: function value(object) {
-			'use strict';
-			return Array.prototype.slice.call(object);
-		},
-		configurable: true,
-		writable: true
-	});
-}
 
 window.Morph = Morph;
