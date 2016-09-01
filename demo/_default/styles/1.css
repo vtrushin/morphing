@@ -19,11 +19,9 @@
   font-family: Helvetica; }
   .list li {
     display: -webkit-box;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     -webkit-box-align: baseline;
-    -webkit-align-items: baseline;
         -ms-flex-align: baseline;
             align-items: baseline;
     margin: 0;
@@ -35,7 +33,6 @@
       font-weight: bold; }
     .list li .author {
       -webkit-box-flex: 1;
-      -webkit-flex: 1;
           -ms-flex: 1;
               flex: 1;
       font-size: 12px;
@@ -89,7 +86,6 @@
 
 body:-webkit-full-screen a {
   display: -webkit-box;
-  display: -webkit-flex;
   display: flex; }
 
 body:-moz-full-screen a {
@@ -101,6 +97,5 @@ body:-ms-fullscreen a {
 
 body:fullscreen a {
   display: -webkit-box;
-  display: -webkit-flex;
   display: -ms-flexbox;
   display: flex; }

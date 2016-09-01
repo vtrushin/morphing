@@ -9,12 +9,10 @@
     margin-bottom: 20px; }
   .from .boxes {
     display: -webkit-box;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
         -ms-flex-direction: row;
             flex-direction: row;
     padding: 5px;
@@ -24,7 +22,6 @@
       background-color: yellow; }
     .from .boxes .b {
       -webkit-box-flex: 1;
-      -webkit-flex: 1;
           -ms-flex: 1;
               flex: 1;
       border: 1px dotted red; }

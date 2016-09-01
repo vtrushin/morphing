@@ -1,3 +1,5 @@
+import './polyfills/object-assign';
+import './polyfills/array-from';
 import GhostElementsBuilder from './ghost-elements-builder';
 // import getTransformClientRectDiff from './get-transform-diff';
 import animateElements from './animate-elements';

@@ -3,7 +3,7 @@
 ![Превью](image1.jpg)
 
 Примеры:
-- [Изменение размеров при прокрутке](https://rawgit.com/vtrushin/morphing/master/demo/1/index.html)
-- [Всплывающее окно](https://rawgit.com/vtrushin/morphing/master/demo/2/index.html)
-- [Отправка сообщения](https://rawgit.com/vtrushin/morphing/master/demo/3/index.html)
-- [Переключение между страницами](https://rawgit.com/vtrushin/morphing/master/demo/4/index.html)
+- [Изменение размеров при прокрутке](https://rawgit.com/vtrushin/morphing/master/demo/scrolling/index.html)
+- [Всплывающее окно](https://rawgit.com/vtrushin/morphing/master/demo/popup/index.html)
+- [Отправка сообщения](https://rawgit.com/vtrushin/morphing/master/demo/messaging/index.html)
+- [Переключение между страницами](https://rawgit.com/vtrushin/morphing/master/demo/page-transition/index.html)
