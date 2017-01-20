@@ -2,7 +2,7 @@
 
 function getComputedStyleCssText(style) {
 	let cssText = '';
-	if (style.cssText != '') {
+	if (style.cssText !== '') {
 		return style.cssText;
 	}
 	for (let i = 0; i < style.length; i++) {

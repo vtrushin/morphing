@@ -3,6 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="1.css">
+
 	</head>
 	<body>
 		<div class="container">
@@ -32,14 +33,14 @@
 		window.addEventListener('load', function(){
 			var fromEl = document.querySelector('.from');
 			var toEl = document.querySelector('.to');
-		
+
 			var morph = new Morph(fromEl, toEl, {
 				specialElConfigs: [
 					{ fromEl: '.js-title', toEl: '.js-title' },
 					{ fromEl: '.js-count', toEl: '.js-count' }
 				]
 			});
-		
+
 			morph.animate();
 		});
 	</script>

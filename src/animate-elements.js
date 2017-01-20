@@ -8,9 +8,8 @@ export default function animateElements(animationList, duration, easing, callbac
 
 	let keyframeEffects = animationList.map(animation => {
 		let frames = isReverse
-			? [ animation.to, animation.from ]
-			: [ animation.from, animation.to ]
-		;
+			? [animation.to, animation.from]
+			: [animation.from, animation.to];
 		return new KeyframeEffect(animation.el, frames, settings);
 	});
 

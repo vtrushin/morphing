@@ -5,8 +5,10 @@ import GhostElementsBuilder from './ghost-elements-builder';
 import animateElements from './animate-elements';
 import * as transitionEffects from './transitionEffects';
 
-let defaultSettings = {
+const defaultSettings = {
 	type: 'copy',
+	// src: null,
+	// dist: null,
 	src: {
 		el: null,
 		classHidden: null
@@ -23,61 +25,57 @@ let defaultSettings = {
 };
 
 export default class Morph {
-
-	/*static getDefaultSettings() {
-		return {
-			type: 'copy', // copy | move
-			src: {
-				el: null,
-				classHidden: null
-			},
-			dist: {
-				el: null,
-				classHidden: null
-			},
-			partials: [],
-			context: document.body,
-			duration: 300,
-			easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
-			autoClear: false
-		}
-	}*/
-
 	constructor(settings) {
 		console.time('constructor');
 		this.settings = Object.assign({}, defaultSettings, { context: document.body }, settings);
 		this.ghostElementsBuilder = new GhostElementsBuilder();
 		this.morphEl = document.createElement('div');
 		this.morphEl.className = 'morph-container';
-		this.init();
+
+		this.morphItems = [];
+
+		const {src, dist} = this.settings;
+		const partials = this.settings.partials.map(partial => ({
+			srcEl: src.el.querySelector(partial.src),
+			distEl: dist.el.querySelector(partial.dist)
+		}));
+
+		const excludeSrcElList = [];
+		const excludeDistElList = [];
+
+		const mainMorph = { src: {}, dist: {} };
+		partials.forEach(partial => {
+			this.morphItems.push({ src: {}, dist: {} });
+			excludeSrcElList.push(partial.srcEl);
+			excludeDistElList.push(partial.distEl);
+		});
+
+		if (this.settings.type === 'copy') {
+			dist.el.classList.remove(dist.classHidden);
+
+			// this.coverTransform.src.height = src.el.parentElement.offsetHeight;
+			// this.coverTransform.dist.height = dist.el.parentElement.offsetHeight + 10;
+
+			partials.forEach((partial, i) => {
+				const morphItem = this.morphItems[i];
+				morphItem.src.el = this.ghostElementsBuilder.create(partial.srcEl);
+				morphItem.dist.el = this.ghostElementsBuilder.create(partial.distEl);
+			});
+
+			mainMorph.src.el = this.ghostElementsBuilder.create(src.el, excludeSrcElList);
+			mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
+
+			dist.el.classList.add(dist.classHidden);
+		}
+
+		// this.init();
 		console.timeEnd('constructor');
 	}
 
 	init() {
-		let src = this.settings.src;
-		let dist = this.settings.dist;
 
-		let excludeSrcElList = [];
-		let excludeDistElList = [];
 
-		this.morphItems = [];
 
-		let partials = this.settings.partials.map(setting => {
-			return {
-				srcEl: src.el.querySelector(setting.src),
-				distEl: dist.el.querySelector(setting.dist)
-			};
-		});
-
-		partials.forEach(partial => {
-			let morphItem = {
-				src: {},
-				dist: {}
-			};
-			this.morphItems.push(morphItem);
-			excludeSrcElList.push(partial.srcEl);
-			excludeDistElList.push(partial.distEl);
-		});
 
 		/*this.coverTransform = {
 			src: {},
@@ -168,14 +166,13 @@ export default class Morph {
 		this.animationList = [];
 
 		this.morphItems.forEach(morphItem => {
-			let srcEl = morphItem.src.el;
-			let distEl = morphItem.dist.el;
+			const srcEl = morphItem.src.el;
+			const distEl = morphItem.dist.el;
 
 			let effectFn = Morph.effects.mix;
-			let effect;
 
-			let srcAnimation = {};
-			let distAnimation = {};
+			const srcAnimation = {};
+			const distAnimation = {};
 
 			if ('effect' in morphItem) {
 				if (typeof morphItem.effect === 'string' && morphItem.effect in Morph.effects) {
@@ -187,7 +184,7 @@ export default class Morph {
 				}
 			}
 
-			effect = effectFn(srcEl, distEl);
+			const effect = effectFn(srcEl, distEl);
 
 			srcAnimation.from = {};
 			srcAnimation.to = effect.src;

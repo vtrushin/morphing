@@ -100,7 +100,7 @@
 
 	function getComputedStyleCssText(style) {
 		var cssText = '';
-		if (style.cssText != '') {
+		if (style.cssText !== '') {
 			return style.cssText;
 		}
 		for (var i = 0; i < style.length; i++) {
@@ -269,14 +269,14 @@
 		}
 	}
 
-	function getTransformClientRectDiff(aCR, bCR) {
+	var getTransformClientRectDiff = function getTransformClientRectDiff(aCR, bCR) {
 		return {
 			offsetX: bCR.left + bCR.width / 2 - (aCR.left + aCR.width / 2),
 			offsetY: bCR.top + bCR.height / 2 - (aCR.top + aCR.height / 2),
 			scaleX: bCR.width / aCR.width,
 			scaleY: bCR.height / aCR.height
 		};
-	}
+	};
 
 	function mix(srcEl, distEl) {
 		var srcClientRect = srcEl.getBoundingClientRect();
@@ -339,6 +339,8 @@
 
 	var defaultSettings = {
 		type: 'copy',
+		// src: null,
+		// dist: null,
 		src: {
 			el: null,
 			classHidden: null
@@ -355,27 +357,9 @@
 	};
 
 	var Morph = function () {
-
-		/*static getDefaultSettings() {
-  	return {
-  		type: 'copy', // copy | move
-  		src: {
-  			el: null,
-  			classHidden: null
-  		},
-  		dist: {
-  			el: null,
-  			classHidden: null
-  		},
-  		partials: [],
-  		context: document.body,
-  		duration: 300,
-  		easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
-  		autoClear: false
-  	}
-  }*/
-
 		function Morph(settings) {
+			var _this2 = this;
+
 			_classCallCheck(this, Morph);
 
 			console.time('constructor');
@@ -383,39 +367,56 @@
 			this.ghostElementsBuilder = new GhostElementsBuilder();
 			this.morphEl = document.createElement('div');
 			this.morphEl.className = 'morph-container';
-			this.init();
+
+			this.morphItems = [];
+
+			var _settings = this.settings;
+			var src = _settings.src;
+			var dist = _settings.dist;
+
+			var partials = this.settings.partials.map(function (partial) {
+				return {
+					srcEl: src.el.querySelector(partial.src),
+					distEl: dist.el.querySelector(partial.dist)
+				};
+			});
+
+			var excludeSrcElList = [];
+			var excludeDistElList = [];
+
+			var mainMorph = { src: {}, dist: {} };
+			partials.forEach(function (partial) {
+				_this2.morphItems.push({ src: {}, dist: {} });
+				excludeSrcElList.push(partial.srcEl);
+				excludeDistElList.push(partial.distEl);
+			});
+
+			if (this.settings.type === 'copy') {
+				dist.el.classList.remove(dist.classHidden);
+
+				// this.coverTransform.src.height = src.el.parentElement.offsetHeight;
+				// this.coverTransform.dist.height = dist.el.parentElement.offsetHeight + 10;
+
+				partials.forEach(function (partial, i) {
+					var morphItem = _this2.morphItems[i];
+					morphItem.src.el = _this2.ghostElementsBuilder.create(partial.srcEl);
+					morphItem.dist.el = _this2.ghostElementsBuilder.create(partial.distEl);
+				});
+
+				mainMorph.src.el = this.ghostElementsBuilder.create(src.el, excludeSrcElList);
+				mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
+
+				dist.el.classList.add(dist.classHidden);
+			}
+
+			// this.init();
 			console.timeEnd('constructor');
 		}
 
 		_createClass(Morph, [{
 			key: 'init',
 			value: function init() {
-				var _this2 = this;
-
-				var src = this.settings.src;
-				var dist = this.settings.dist;
-
-				var excludeSrcElList = [];
-				var excludeDistElList = [];
-
-				this.morphItems = [];
-
-				var partials = this.settings.partials.map(function (setting) {
-					return {
-						srcEl: src.el.querySelector(setting.src),
-						distEl: dist.el.querySelector(setting.dist)
-					};
-				});
-
-				partials.forEach(function (partial) {
-					var morphItem = {
-						src: {},
-						dist: {}
-					};
-					_this2.morphItems.push(morphItem);
-					excludeSrcElList.push(partial.srcEl);
-					excludeDistElList.push(partial.distEl);
-				});
+				var _this3 = this;
 
 				/*this.coverTransform = {
     	src: {},
@@ -434,9 +435,9 @@
 					// this.coverTransform.dist.height = dist.el.parentElement.offsetHeight + 10;
 
 					partials.forEach(function (partial, i) {
-						var morphItem = _this2.morphItems[i];
-						morphItem.src.el = _this2.ghostElementsBuilder.create(partial.srcEl);
-						morphItem.dist.el = _this2.ghostElementsBuilder.create(partial.distEl);
+						var morphItem = _this3.morphItems[i];
+						morphItem.src.el = _this3.ghostElementsBuilder.create(partial.srcEl);
+						morphItem.dist.el = _this3.ghostElementsBuilder.create(partial.distEl);
 					});
 
 					mainMorph.src.el = this.ghostElementsBuilder.create(src.el, excludeSrcElList);
@@ -448,7 +449,7 @@
 					// this.coverTransform.src.height = src.el.parentElement.offsetHeight;
 
 					partials.forEach(function (partial, i) {
-						_this2.morphItems[i].src.el = _this2.ghostElementsBuilder.create(partial.srcEl, excludeSrcElList);
+						_this3.morphItems[i].src.el = _this3.ghostElementsBuilder.create(partial.srcEl, excludeSrcElList);
 					});
 
 					mainMorph.src.el = this.ghostElementsBuilder.create(src.el, excludeSrcElList);
@@ -459,7 +460,7 @@
 					// this.coverTransform.dist.height = dist.el.parentElement.offsetHeight;
 
 					partials.forEach(function (partial, i) {
-						_this2.morphItems[i].dist.el = _this2.ghostElementsBuilder.create(partial.distEl, excludeDistElList);
+						_this3.morphItems[i].dist.el = _this3.ghostElementsBuilder.create(partial.distEl, excludeDistElList);
 					});
 
 					mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
@@ -474,7 +475,7 @@
 					el.className = 'morph-animation';
 					el.appendChild(morphItem.src.el);
 					el.appendChild(morphItem.dist.el);
-					_this2.morphEl.appendChild(el);
+					_this3.morphEl.appendChild(el);
 				});
 
 				this.settings.context.appendChild(this.morphEl);
@@ -502,7 +503,7 @@
 		}, {
 			key: 'reCalculate',
 			value: function reCalculate() {
-				var _this3 = this;
+				var _this4 = this;
 
 				this.animationList = [];
 
@@ -511,7 +512,6 @@
 					var distEl = morphItem.dist.el;
 
 					var effectFn = Morph.effects.mix;
-					var effect = void 0;
 
 					var srcAnimation = {};
 					var distAnimation = {};
@@ -526,7 +526,7 @@
 						}
 					}
 
-					effect = effectFn(srcEl, distEl);
+					var effect = effectFn(srcEl, distEl);
 
 					srcAnimation.from = {};
 					srcAnimation.to = effect.src;
@@ -540,7 +540,7 @@
 						distAnimation.to[cssProp] = window.getComputedStyle(srcEl).getPropertyValue(cssProp);
 					});
 
-					_this3.animationList.push({
+					_this4.animationList.push({
 						el: srcEl,
 						from: srcAnimation.from,
 						to: srcAnimation.to
@@ -573,7 +573,7 @@
 		}, {
 			key: 'animate',
 			value: function animate(callback) {
-				var _this4 = this;
+				var _this5 = this;
 
 				if (this._isAnimating || !this.atStart) return;
 
@@ -588,21 +588,21 @@
 				this.settings.dist.el.classList.add(this.settings.dist.classHidden);
 
 				animateElements(this.animationList, this.settings.duration, this.settings.easingFunction, function () {
-					_this4.settings.dist.el.classList.remove(_this4.settings.dist.classHidden);
+					_this5.settings.dist.el.classList.remove(_this5.settings.dist.classHidden);
 
 					//this.settings.from.el.classList.remove(this.settings.from.classHidden);
-					_this4.settings.src.el.parentElement.style.height = '';
+					_this5.settings.src.el.parentElement.style.height = '';
 
-					if (_this4.settings.actionType === 'move') {
-						_this4.settings.src.el.classList.add(_this4.settings.src.classHidden);
+					if (_this5.settings.actionType === 'move') {
+						_this5.settings.src.el.classList.add(_this5.settings.src.classHidden);
 					}
 
-					_this4.morphEl.style.display = 'none';
-					_this4._isAnimating = false;
-					_this4.atStart = false;
+					_this5.morphEl.style.display = 'none';
+					_this5._isAnimating = false;
+					_this5.atStart = false;
 
-					if (_this4.settings.autoClear) {
-						_this4.clear();
+					if (_this5.settings.autoClear) {
+						_this5.clear();
 					}
 
 					if (callback) {
@@ -613,7 +613,7 @@
 		}, {
 			key: 'reverse',
 			value: function reverse() {
-				var _this5 = this;
+				var _this6 = this;
 
 				if (this._isAnimating || this.atStart) return;
 
@@ -622,10 +622,10 @@
 				this.settings.dist.el.classList.add(this.settings.dist.classHidden);
 
 				animateElements(this.animationList, this.settings.duration, this.settings.easingFunction, function () {
-					_this5.settings.src.el.classList.remove(_this5.settings.src.classHidden);
-					_this5.morphEl.style.display = 'none';
-					_this5._isAnimating = false;
-					_this5.atStart = true;
+					_this6.settings.src.el.classList.remove(_this6.settings.src.classHidden);
+					_this6.morphEl.style.display = 'none';
+					_this6._isAnimating = false;
+					_this6.atStart = true;
 				}, true);
 			}
 		}, {
