@@ -1,7 +1,7 @@
 export default function animateElements(animationList, duration, easing, callback, isReverse) {
 	let settings = {
-		duration: duration,
-		easing: easing,
+		duration: duration || 2000,
+		easing: easing || 'ease',
 		direction: 'alternate',
 		fill: 'backwards'
 	};

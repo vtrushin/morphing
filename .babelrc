@@ -1,10 +1,4 @@
 {
-	"plugins": [
-		"transform-es2015-modules-umd",
-		"transform-object-assign"
-	],
-	"presets": [
-		"es2015"
-	],
+	"plugins": ["transform-es2015-modules-amd"],
 	"moduleId": "Morph"
 }

@@ -1,32 +1,38 @@
 // import defaultStyles from './default-computed-styles';
+import createElement from './create-element';
 
 function getComputedStyleCssText(style) {
 	let cssText = '';
+
 	if (style.cssText !== '') {
 		return style.cssText;
 	}
-	for (let i = 0; i < style.length; i++) {
-		cssText += style[i] + ": " + style.getPropertyValue(style[i]) + "; ";
+
+	for (let i = 0; i < style.length; i ++) {
+		const property = style[i];
+		const value = style.getPropertyValue(property);
+		cssText += `${property}: ${value};`;
 	}
+
 	return cssText;
 }
 
-let isIE = 'currentStyle' in HTMLElement.prototype;
+const isIE = 'currentStyle' in HTMLElement.prototype;
 let defaultStyles = {};
 
 export default class GhostElementsBuilder {
-
 	constructor() {
 		this.elementsCount = 0;
 		this.styles = '';
-		this.styleEl = document.createElement('style');
-		this.styleEl.type = 'text/css';
+		this.styleEl = createElement('style', {
+			type: 'text/css'
+		});
 		document.head.appendChild(this.styleEl);
 
 		//if (isIE) {
 			console.log(222);
 
-			let div = document.createElement('div');
+			/*let div = document.createElement('div');
 			let fragment = document.createDocumentFragment();
 			fragment.appendChild(div);
 			let styles = window.getComputedStyle(div);
@@ -35,38 +41,38 @@ export default class GhostElementsBuilder {
 				let prop = styles[i];
 				let value = styles[prop];
 				defaultStyles[prop] = value;
-			}
+			}*/
 		//}
 	}
 
-	create(el, excludedElList = []) {
+	create(element, excludedElList = []) {
 		let childElementsCount = 0;
 
 		let process = (_el) => {
-			let clone = _el.cloneNode(false);
+			const clone = _el.cloneNode(false);
 			let childNode = _el.childNodes[0];
-			let computedStyle = window.getComputedStyle(_el);
+			const computedStyle = window.getComputedStyle(_el);
 			let cssClassName = `el${this.elementsCount}${childElementsCount}`;
 
-			clone.setAttribute('data-class', clone.className);
+			clone.dataset.class = clone.className;
 			// clone.removeAttribute('class');
 			clone.className = cssClassName;
 			clone.removeAttribute('id');
 
 			// clone.style.transformStyle = 'flat';
 
-			// Save scroll position
-			if (computedStyle.overflow === 'auto' || computedStyle.overflow === 'scroll') {
+			// Save scroll position in data set
+			if (['auto', 'scroll'].includes(computedStyle.overflow)) {
 				clone.style.overflow = 'hidden';
-				clone.dataset.scrollTop = _el.scrollTop;
 				clone.dataset.scrollLeft = _el.scrollLeft;
+				clone.dataset.scrollTop = _el.scrollTop;
 			}
 
-			if (childNode && childNode.nodeType === 3 && childNode.textContent.replace(/\s+/g, '') !== '') {
+			if (childNode && childNode.nodeType === 3 && childNode.textContent.trim() !== '') {
 				clone.textContent = childNode.textContent;
 			}
 
-			if (isIE) {
+			/*if (isIE) {
 				let styles = '';
 				let count = 0;
 				for (let i = 0; i < computedStyle.length; i ++) {
@@ -80,11 +86,11 @@ export default class GhostElementsBuilder {
 				this.styles += `.${cssClassName} { ${styles} }`;
 			} else {
 				this.styles += `.${cssClassName} { ${getComputedStyleCssText(computedStyle)} }`;
-			}
+			}*/
 
 			childElementsCount ++;
 
-			if (excludedElList.indexOf(_el) !== -1 && excludedElList[excludedElList.indexOf(_el)] !== el) {
+			if (excludedElList.indexOf(_el) !== -1 && excludedElList[excludedElList.indexOf(_el)] !== element) {
 				clone.style.visibility = 'hidden';
 				clone.textContent = '';
 			} else {
@@ -103,9 +109,9 @@ export default class GhostElementsBuilder {
 
 		// console.time('timer');
 
-		let parent = process(el);
+		let parent = process(element);
 
-		let clientRect = el.getBoundingClientRect();
+		let clientRect = element.getBoundingClientRect();
 
 		let styles = {
 			position: 'absolute',

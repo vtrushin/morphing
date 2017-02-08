@@ -18,7 +18,7 @@ const defaultSettings = {
 		classHidden: null
 	},
 	partials: [],
-	context: null,
+	// context: null,
 	duration: 300,
 	easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
 	autoClear: false
@@ -27,7 +27,7 @@ const defaultSettings = {
 export default class Morph {
 	constructor(settings) {
 		console.time('constructor');
-		this.settings = Object.assign({}, defaultSettings, { context: document.body }, settings);
+		this.settings = { ...defaultSettings, ...settings };
 		this.ghostElementsBuilder = new GhostElementsBuilder();
 		this.morphEl = document.createElement('div');
 		this.morphEl.className = 'morph-container';
@@ -50,7 +50,7 @@ export default class Morph {
 			excludeDistElList.push(partial.distEl);
 		});
 
-		if (this.settings.type === 'copy') {
+		// if (this.settings.type === 'copy') {
 			dist.el.classList.remove(dist.classHidden);
 
 			// this.coverTransform.src.height = src.el.parentElement.offsetHeight;
@@ -66,16 +66,17 @@ export default class Morph {
 			mainMorph.dist.el = this.ghostElementsBuilder.create(dist.el, excludeDistElList);
 
 			dist.el.classList.add(dist.classHidden);
-		}
+		// }
 
 		// this.init();
 		console.timeEnd('constructor');
 	}
 
+	setDestinationElement(element, partials) {
+
+	}
+
 	init() {
-
-
-
 
 		/*this.coverTransform = {
 			src: {},

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<script type="text/javascript" src="node_modules/web-animations-js/web-animations-next.min.js"></script>
+	<script type="text/javascript" src="dist/bundle.js"></script>
+	<style>
+		.button-clone {
+			margin-bottom: 10px;
+		}
+
+		.cover {
+			width: 250px;
+			/*height: 200px;*/
+			overflow: auto;
+			border: 1px solid red;
+		}
+
+		.box {
+			display: flex;
+			height: 100%;
+			flex-direction: column;
+		}
+
+		.header,
+		.body {
+			border: 4px solid green;
+			padding: 10px;
+		}
+
+		.header {
+			margin: 10px;
+
+		}
+
+		.body {
+			flex: 1;
+			overflow: auto;
+		}
+
+		.a {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+		}
+	</style>
+</head>
+<body>
+
+<button class="button-clone">Clone!</button>
+
+<!--<button class="a">Clone!</button>-->
+
+<div class="cover">
+	<div class="box">
+		Text
+		<br/>
+		<br/>
+		Text2
+		<div class="header">Header</div>
+		<div class="body">
+			<table>
+				<tr>
+					<td>
+						<select>
+							<option>Ъ</option>
+						</select>
+					</td>
+					<td>
+						<input size="10"/>
+					</td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<textarea rows="3">
+							Социализм, как бы это ни казалось парадоксальным, определяет гуманизм. Понятие длинноепредложениекотороенедолжноперенестись политического конфликта, однако, иллюстрирует экзистенциальный бихевиоризм. Политическая элита, тем более в условиях социально-экономического кризиса, иллюстрирует механизм власти. По сути, политическая психология фактически означает феномен толпы. Идеология, как бы это ни казалось парадоксальным, означает либерализм. Авторитаризм практически сохраняет бихевиоризм.
+						</textarea>
+					</td>
+					<td>
+						<button>Зо</button>
+						<input type="checkbox"/>
+						<input type="radio"/>
+						<input type="color"/>
+					</td>
+				</tr>
+			</table>
+			Социализм
+			<!--Социализм, как бы это ни казалось парадоксальным, определяет гуманизм. Понятие длинноепредложениекотороенедолжноперенестись политического конфликта, однако, иллюстрирует экзистенциальный бихевиоризм. Политическая элита, тем более в условиях социально-экономического кризиса, иллюстрирует механизм власти. По сути, политическая психология фактически означает феномен толпы. Идеология, как бы это ни казалось парадоксальным, означает либерализм. Авторитаризм практически сохраняет бихевиоризм.-->
+		</div>
+	</div>
+</div>
+
+<!--<canvas width="300" height="300" style="position: absolute; left: 300px; top: 10px; border: 1px solid green"></canvas>-->
+
+<script>
+	const buttonClone = document.querySelector('.button-clone');
+	const cover = document.querySelector('.cover');
+	const canvas = document.querySelector('canvas');
+
+	/*const context = canvas.getContext('2d');*/
+
+	buttonClone.addEventListener('click', () => {
+		const cloned = cloneElement(cover);
+
+		/*const svg = `
+			<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+				<foreignObject width="100%" height="100%">
+					<div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%;">
+						${cloned.outerHTML}
+					</div>
+				</foreignObject>
+			</svg>
+		`;
+
+		const image = new Image();
+		image.onload = () => {
+			context.drawImage(image, 0, 0);
+		};
+		image.src = `data:image/svg+xml;utf8,${encodeURI(svg)}`;*/
+
+
+		document.body.appendChild(cloned);
+
+//		morph.animate();
+//		const cloned = cloneElement(cover);
+//		console.log(cloned);
+//		document.body.appendChild(cloned);
+	});
+</script>
+
+</body>
+</html>
