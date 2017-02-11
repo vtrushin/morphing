@@ -1,4 +1,4 @@
-import { setStyles, createElement, removeAttributes } from './utils/element';
+import { setStyles, setAttributes, createElement, removeAttributes } from './utils/element';
 
 const ignoredHtmlTags = new Set([
 	'br', 'style', 'script', 'template'
@@ -46,11 +46,25 @@ function cloneTextarea(node, parent) {
 
 }
 
+function createPseudoElement(style) {
+	const content = style.getPropertyValue('content');
+
+	if (['', 'none', 'normal'].includes(content)) {
+		return null;
+	}
+
+	return createElement('span', {
+		style: style
+	});
+}
+
 function cloneElement(element, excludedElements = new Set(), parent) {
 	const clientRect = element.getBoundingClientRect();
 	const cloned = element.cloneNode(false);
-	const computedStyle = window.getComputedStyle(element);
-	const { cssText } = computedStyle;
+	const style = window.getComputedStyle(element);
+	const before = createPseudoElement(window.getComputedStyle(element, '::before'));
+	const after = createPseudoElement(window.getComputedStyle(element, '::after'));
+	const { cssText } = style;
 
 	if (element.className) {
 		cloned.dataset.class = element.className;
@@ -60,8 +74,20 @@ function cloneElement(element, excludedElements = new Set(), parent) {
 
 	cloned.style = cssText;
 
-	/*let container;
+	// Save scroll position
+	if (['auto', 'scroll'].includes(style.overflow)) {
+		setAttributes(cloned, {
+			style: {
+				overflow: 'hidden'
+			},
+			dataset: {
+				scrollTop: element.scrollTop,
+				scrollLeft: element.scrollLeft
+			}
+		});
+	}
 
+	/*let container;
 	// Simulate scroll offset
 	if (['auto', 'scroll'].includes(computedStyle.overflow)) {
 		const wrapper = document.createElement('div');
@@ -75,6 +101,10 @@ function cloneElement(element, excludedElements = new Set(), parent) {
 	} else {
 		container = cloned;
 	}*/
+
+	if (before) {
+		cloned.appendChild(before);
+	}
 
 	if (element.tagName.toLowerCase() !== 'textarea') {
 		Array.from(element.childNodes).forEach(childEl => {
@@ -100,9 +130,13 @@ function cloneElement(element, excludedElements = new Set(), parent) {
 		});
 	}
 
+	if (after) {
+		cloned.appendChild(after);
+	}
+
 	let left, top;
 	if (parent) {
-		let parentClientRect = parent.getBoundingClientRect();
+		const parentClientRect = parent.getBoundingClientRect();
 		left = clientRect.left - parentClientRect.left - parent.clientLeft;
 		top = clientRect.top - parentClientRect.top - parent.clientTop;
 	} else {
@@ -114,7 +148,7 @@ function cloneElement(element, excludedElements = new Set(), parent) {
 
 	setStyles(cloned, {
 		position: parent ? 'absolute' : 'fixed',
-		left: left + 'px',
+		left: left+ 'px',
 		top: top + 'px',
 		width: clientRect.width + 'px',
 		height: clientRect.height + 'px',
@@ -194,5 +228,7 @@ function cloneElementRecursive(element, excludedElements = new Set()) {
 }*/
 
 export default (element, excludedElements) => {
-	return cloneElement(element, excludedElements)
+	const cloneElement2 = cloneElement(element, excludedElements);
+	cloneElement2.style.left = '300px';
+	return cloneElement2;
 };

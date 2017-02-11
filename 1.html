@@ -11,10 +11,21 @@
 		}
 
 		.cover {
+			position: relative;
 			width: 250px;
 			/*height: 200px;*/
 			overflow: auto;
 			border: 1px solid red;
+		}
+
+		.cover::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100px;
+			height: 100px;
+			background-color: red;
 		}
 
 		.box {

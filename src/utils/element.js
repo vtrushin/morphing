@@ -1,9 +1,11 @@
-export function setStyles(element, styles) {
-	const properties = Object.keys(styles);
-
-	properties.forEach(propertyName => {
-		element.style[propertyName] = styles[propertyName];
-	});
+export function setStyles(element, styles = {}) {
+	if (typeof styles == 'string') {
+		element.style = styles;
+	} else {
+		Object.keys(styles).forEach(propertyName => {
+			element.style[propertyName] = styles[propertyName];
+		});
+	}
 
 	return element;
 }
@@ -17,11 +19,11 @@ export function createElement(elementName, attributes = []) {
 
 
 export function setAttributes(element, attributes = []) {
-	const attributeNames = Object.keys(attributes);
-
-	attributeNames.forEach(attributeName => {
+	Object.keys(attributes).forEach(attributeName => {
 		if (attributeName === 'style') {
 			setStyles(element, attributes[attributeName]);
+		} else if (attributeName === 'dataset') {
+			setDataset(element, attributes[attributeName]);
 		} else {
 			element.setAttribute(attributeName, attributes[attributeName]);
 		}
@@ -30,8 +32,15 @@ export function setAttributes(element, attributes = []) {
 	return element;
 }
 
+export function setDataset(element, properties = {}) {
+	Object.keys(properties).forEach(propertyName => {
+		element.dataset[propertyName] = properties[propertyName];
+	});
 
-export function removeAttributes(element, attributeNames) {
+	return element;
+}
+
+export function removeAttributes(element, attributeNames = []) {
 	attributeNames.forEach(attributeName => {
 		element.removeAttribute(attributeName);
 	});

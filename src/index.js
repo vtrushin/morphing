@@ -2,7 +2,7 @@
 import { createElement } from './utils/element';
 import cloneElement from './clone-element';
 // import createInlinedElementClone from './create-inlined-element-clone';
-import getTransformClientRectDiff from './get-transform-diff';
+import getTransformClientRectDiff from './offset-transform';
 import animateElements from './animate-elements';
 
 const defaultSettings = {
