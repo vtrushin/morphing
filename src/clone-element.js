@@ -4,25 +4,6 @@ const ignoredHtmlTags = new Set([
 	'br', 'style', 'script', 'template'
 ]);
 
-/*let defaultStyles;
-{
-	const frame = createElement('iframe');
-	const frameBody = frame.ownerDocument.documentElement;
-
-	function getStyle(...props) {
-		const element = createElement(...props);
-		frameBody.appendChild(element);
-		return getComputedStyle(element)
-	}
-
-	defaultStyles = {
-		button:     getStyle('button'),
-		inputText:  getStyle('input', { type: 'text' }),
-		textarea:   getStyle('textarea'),
-		select:     getStyle('select')
-	};
-}*/
-
 function cloneTextNode(node, parent) {
 	const parentClientRect = parent.getBoundingClientRect();
 	const range = document.createRange();
