@@ -4,7 +4,7 @@ import cloneTextNode from './clone/text-node';
 import cloneElement from './clone/element';
 import cloneTextAreaElement from './clone/text-area-element';
 
-function createPseudoElement(style) {
+/*function createPseudoElement(style) {
 	const content = style.getPropertyValue('content');
 
 	if (['', 'none', 'normal'].includes(content)) {
@@ -15,25 +15,55 @@ function createPseudoElement(style) {
 		node: document.createElement('span'),
 		style: style
 	};
-}
+}*/
 
 export default function clone(element) {
 	let i = 0;
-	const rules = {};
+	let css = '';
 
 	function process(element, context) {
-		const oneDepthElement = (
-			cloneTextNode() ||
-			cloneTextAreaElement()
+		let cloned = null;
+		const clonedWithoutChild = (
+			cloneTextNode(element, context) ||
+			cloneTextAreaElement(element, context)
 		);
 
-		if (oneDepthElement) {
-
+		if (clonedWithoutChild) {
+			cloned = clonedWithoutChild;
 		} else {
-			// const cloned = cloneElement(element, context);
-			Array.from(element.childNodes).forEach(process);
+			const clonedWithChild = cloneElement(element, context);
+			if (clonedWithChild) {
+				Array.from(element.childNodes).forEach(child => {
+					const childCloned = process(child, clonedWithChild.node);
+					if (childCloned) {
+						clonedWithChild.node.appendChild(childCloned);
+					}
+				});
+				cloned = clonedWithChild;
+			}
+		}
+
+		if (cloned) {
+			const className = `morph-el-${i}`;
+			css += `
+				.${className} {
+					${cloned.css}
+				}
+			`;
+			i ++;
+			cloned.node.className = className;
+			return cloned.node;
+		} else {
+			return null;
 		}
 	}
 
-	process(element);
+	let process_ = process(element);
+
+	const style = document.createElement('style');
+	style.textContent = css;
+
+	process_.appendChild(style);
+
+	return process_;
 }

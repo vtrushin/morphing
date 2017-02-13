@@ -5,8 +5,8 @@ const ignoredHtmlTags = new Set([
 	'br', 'style', 'script', 'template'
 ]);
 
-export default function cloneElement(element, parent) {
-	if (ignoredHtmlTags.has(element.tagName.toLowerCase())) {
+export default function cloneElement(element, parent, contextRect) {
+	if (!(element instanceof HTMLElement) || ignoredHtmlTags.has(element.tagName.toLowerCase())) {
 		return null;
 	}
 
