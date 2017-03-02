@@ -4,7 +4,7 @@ export function stylesToCssText(styles) {
 	for (let prop in styles) {
 		if (styles.hasOwnProperty(prop)) {
 			const value = styles[prop];
-			decls.push(`${prop}: ${value}`)
+			decls.push(`${prop}: ${value}`);
 		}
 	}
 

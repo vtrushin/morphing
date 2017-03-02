@@ -1,4 +1,4 @@
-export default function animateElements(animationList, duration = 2000, easing = 'ease', callback, isReverse) {
+export default function animateElements(list, duration = 2000, easing = 'ease', callback, isReverse) {
 	const settings = {
 		duration,
 		easing,
@@ -6,10 +6,11 @@ export default function animateElements(animationList, duration = 2000, easing =
 		fill: 'backwards'
 	};
 
-	const keyframeEffects = animationList.map(animation => {
+	const keyframeEffects = list.map(animation => {
 		const frames = isReverse
 			? [animation.to, animation.from]
 			: [animation.from, animation.to];
+
 		return new KeyframeEffect(animation.el, frames, settings);
 	});
 

@@ -15,24 +15,28 @@ import cloneTextAreaElement from './clone/text-area-element';
 	};
 }*/
 
+function parseCssPxValue(value) {
+	return Number(value.replace('px', ''));
+}
+
 export default function clone(element) {
 	let i = 0;
 	let css = '';
 
-	function process(element, contextClientRect) {
+	function process(element, contextElement) {
 		let cloned = null;
 		const clonedOneLevelElement = (
-			cloneTextNode(element, contextClientRect) ||
-			cloneTextAreaElement(element, contextClientRect)
+			cloneTextNode(element, contextElement) ||
+			cloneTextAreaElement(element, contextElement)
 		);
 
 		if (clonedOneLevelElement) {
 			cloned = clonedOneLevelElement;
 		} else {
-			const clonedDeepElement = cloneElement(element, contextClientRect);
+			const clonedDeepElement = cloneElement(element, contextElement);
 			if (clonedDeepElement) {
 				Array.from(element.childNodes).forEach(child => {
-					const clonedChild = process(child, clonedDeepElement.clientRect);
+					const clonedChild = process(child, clonedDeepElement);
 					if (clonedChild) {
 						clonedDeepElement.element.appendChild(clonedChild);
 					}
@@ -45,23 +49,41 @@ export default function clone(element) {
 			return null;
 		}
 
-		/*if (cloned.cssText) {
-			setStyles(cloned.element, cloned.cssText);
-		}*/
+		if (cloned.computedStyle) {
+			setStyles(cloned.element, cloned.computedStyle.cssText);
+		}
 
 		let styles = {
-			position: contextClientRect ? 'absolute' : 'fixed',
-			left: cloned.clientRect.left + (contextClientRect ? 0 : 300) + 'px',
-			top: cloned.clientRect.top + 'px',
 			width: cloned.clientRect.width + 'px',
 			height: cloned.clientRect.height + 'px',
-			// height: element.getBoundingClientRect().height,
 			boxSizing: 'border-box',
 			margin: 0,
 			// pointerEvents: 'none'
 		};
 
-		console.log(element, styles);
+		let position;
+		let left = cloned.clientRect.left;
+		let top = cloned.clientRect.top;
+
+		if (contextElement) {
+			position = 'absolute';
+			left -= contextElement.clientRect.left - contextElement.element.clientLeft;
+			top -= contextElement.clientRect.top - contextElement.element.clientTop;
+
+			if (contextElement.computedStyle) {
+				left -= parseCssPxValue(contextElement.computedStyle.borderLeftWidth);
+				top -= parseCssPxValue(contextElement.computedStyle.borderTopWidth);
+			}
+		} else {
+			position = 'fixed';
+			left += 300;
+		}
+
+		Object.assign(styles, {
+			position,
+			left: left + 'px',
+			top: top + 'px'
+		});
 
 		setStyles(cloned.element, styles);
 
@@ -80,7 +102,7 @@ export default function clone(element) {
 		return cloned.element;
 	}
 
-	let cloned = process(element);
+	let cloned = process(element, null);
 
 	/*const style = document.createElement('style');
 	style.textContent = css;
