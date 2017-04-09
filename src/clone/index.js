@@ -1,8 +1,8 @@
-import {setStyles, setAttributes, createElement, removeAttributes} from './utils/element';
+import {setStyles, setAttributes, createElement, removeAttributes} from '../utils/element';
 // import {stylesToCssText} from './utils/styles';
-import cloneTextNode from './clone/text-node';
-import cloneElement from './clone/element';
-import cloneTextAreaElement from './clone/text-area-element';
+import cloneTextNode from './text-node';
+import cloneElement from './element';
+import cloneTextAreaElement from './text-area-element';
 
 /*function createPseudoElement(style) {
 	const content = style.getPropertyValue('content');

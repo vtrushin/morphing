@@ -1,11 +1,11 @@
 // import GhostElementsBuilder from './ghost-elements-builder';
 import { createElement } from './utils/element';
-import cloneElement from './clone-element2';
+import cloneElement from './clone/index';
 // import createInlinedElementClone from './create-inlined-element-clone';
 import getTransformClientRectDiff from './offset-transform';
 import animateElements from './animate-elements';
 
-const defaultSettings = {
+/*const defaultSettings = {
 	type: 'copy',
 	// src: null,
 	// dist: null,
@@ -50,11 +50,11 @@ export function mix(srcEl, distEl) {
 			opacity: 0
 		}
 	};
-}
+}*/
 
-window.cloneElement = cloneElement;
+// window.cloneElement = cloneElement;
 
-/*window.Morph = class Morph {
+window.Morph = class Morph {
 	constructor(settings) {
 		this.settings = Object.assign({}, defaultSettings, settings);
 		// this.ghostElementsBuilder = new GhostElementsBuilder();
@@ -111,4 +111,4 @@ window.cloneElement = cloneElement;
 	setDestinationElement(element, partials) {
 
 	}
-};*/
+};

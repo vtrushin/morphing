@@ -1,5 +1,9 @@
+const nameSpaces = {
+	svg: 'http://www.w3.org/2000/svg'
+};
+
 export function setStyles(element, styles = {}) {
-	if (typeof styles == 'string') {
+	if (typeof styles === 'string') {
 		element.style = styles;
 	} else {
 		Object.keys(styles).forEach(propertyName => {
@@ -12,7 +16,15 @@ export function setStyles(element, styles = {}) {
 
 
 export function createElement(elementName, attributes = []) {
-	const element = document.createElement(elementName);
+	const colonPos = elementName.indexOf(':');
+	let element;
+
+	if (colonPos !== -1) {
+		const ns = nameSpaces[elementName.substring(0, colonPos)];
+		element = document.createElementNS(ns, elementName);
+	} else {
+		element = document.createElement(elementName);
+	}
 
 	return setAttributes(element, attributes);
 }
@@ -20,12 +32,22 @@ export function createElement(elementName, attributes = []) {
 
 export function setAttributes(element, attributes = []) {
 	Object.keys(attributes).forEach(attributeName => {
-		if (attributeName === 'style') {
-			setStyles(element, attributes[attributeName]);
-		} else if (attributeName === 'dataset') {
-			setDataset(element, attributes[attributeName]);
-		} else {
-			element.setAttribute(attributeName, attributes[attributeName]);
+		switch (attributeName) {
+			case 'style': {
+				setStyles(element, attributes[attributeName]);
+				break;
+			}
+			case 'dataset': {
+				setDataset(element, attributes[attributeName]);
+				break;
+			}
+			case 'className': {
+				element.setAttribute('class', attributes[attributeName]);
+				break;
+			}
+			default: {
+				element.setAttribute(attributeName, attributes[attributeName]);
+			}
 		}
 	});
 

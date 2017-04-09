@@ -114,15 +114,10 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(4), __webpack_require__(5), __webpack_require__(11), __webpack_require__(12)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _element, _cloneElement, _offsetTransform, _animateElements) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(4), __webpack_require__(13), __webpack_require__(11), __webpack_require__(12)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_element, _index, _offsetTransform, _animateElements) {
 		'use strict';
 
-		Object.defineProperty(exports, "__esModule", {
-			value: true
-		});
-		exports.mix = mix;
-
-		var _cloneElement2 = _interopRequireDefault(_cloneElement);
+		var _index2 = _interopRequireDefault(_index);
 
 		var _offsetTransform2 = _interopRequireDefault(_offsetTransform);
 
@@ -134,115 +129,110 @@
 			};
 		}
 
+		/*const defaultSettings = {
+	 	type: 'copy',
+	 	// src: null,
+	 	// dist: null,
+	 	src: {
+	 		el: null,
+	 		classHidden: null
+	 	},
+	 	dist: {
+	 		el: null,
+	 		classHidden: null
+	 	},
+	 	partials: [],
+	 	// context: null,
+	 	duration: 300,
+	 	easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
+	 	autoClear: false
+	 };
+	 
+	 export function mix(srcEl, distEl) {
+	 	let srcClientRect = srcEl.getBoundingClientRect();
+	 	let distClientRect = distEl.getBoundingClientRect();
+	 
+	 	let srcTransform = getTransformClientRectDiff(srcClientRect, distClientRect);
+	 	let distTransform = getTransformClientRectDiff(distClientRect, srcClientRect);
+	 
+	 	srcEl.style.transformOrigin = 'center center';
+	 	distEl.style.transformOrigin = 'center center';
+	 
+	 	return {
+	 		src: {
+	 			transform: `
+	 				translate(${srcTransform.offsetX}px, ${srcTransform.offsetY}px)
+	 				scale(${srcTransform.scaleX}, ${srcTransform.scaleY})
+	 			`,
+	 			opacity: 0
+	 		},
+	 		dist: {
+	 			transform: `
+	 				translate(${distTransform.offsetX}px, ${distTransform.offsetY}px)
+	 				scale(${distTransform.scaleX}, ${distTransform.scaleY})
+	 			`,
+	 			opacity: 0
+	 		}
+	 	};
+	 }*/
+
+		// window.cloneElement = cloneElement;
+
 		// import createInlinedElementClone from './create-inlined-element-clone';
 		// import GhostElementsBuilder from './ghost-elements-builder';
-		const defaultSettings = {
-			type: 'copy',
-			// src: null,
-			// dist: null,
-			src: {
-				el: null,
-				classHidden: null
-			},
-			dist: {
-				el: null,
-				classHidden: null
-			},
-			partials: [],
-			// context: null,
-			duration: 300,
-			easing: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
-			autoClear: false
+		window.Morph = class Morph {
+			constructor(settings) {
+				this.settings = Object.assign({}, defaultSettings, settings);
+				// this.ghostElementsBuilder = new GhostElementsBuilder();
+			}
+
+			from(element) {
+				this.from = (0, _index2.default)(element);
+				return this;
+			}
+
+			to(element) {
+				this.to = (0, _index2.default)(element);
+				return this;
+			}
+
+			animate() {
+
+				document.body.appendChild(this.from);
+				document.body.appendChild(this.to);
+
+				const effect = mix(this.from, this.to);
+
+				const srcAnimation = {};
+				const distAnimation = {};
+
+				srcAnimation.from = {};
+				srcAnimation.to = effect.src;
+				Object.keys(effect.src).forEach(cssProp => {
+					srcAnimation.from[cssProp] = window.getComputedStyle(this.from).getPropertyValue(cssProp);
+				});
+
+				distAnimation.from = effect.dist;
+				distAnimation.to = {};
+				Object.keys(effect.dist).forEach(cssProp => {
+					distAnimation.to[cssProp] = window.getComputedStyle(this.to).getPropertyValue(cssProp);
+				});
+
+				const animationList = [{
+					el: this.from,
+					from: srcAnimation.from,
+					to: srcAnimation.to
+				}, {
+					el: this.to,
+					from: distAnimation.from,
+					to: distAnimation.to
+				}];
+
+				(0, _animateElements2.default)(animationList);
+			}
+
+			setDestinationElement(element, partials) {}
 		};
-
-		function mix(srcEl, distEl) {
-			let srcClientRect = srcEl.getBoundingClientRect();
-			let distClientRect = distEl.getBoundingClientRect();
-
-			let srcTransform = (0, _offsetTransform2.default)(srcClientRect, distClientRect);
-			let distTransform = (0, _offsetTransform2.default)(distClientRect, srcClientRect);
-
-			srcEl.style.transformOrigin = 'center center';
-			distEl.style.transformOrigin = 'center center';
-
-			return {
-				src: {
-					transform: `
-					translate(${srcTransform.offsetX}px, ${srcTransform.offsetY}px)
-					scale(${srcTransform.scaleX}, ${srcTransform.scaleY})
-				`,
-					opacity: 0
-				},
-				dist: {
-					transform: `
-					translate(${distTransform.offsetX}px, ${distTransform.offsetY}px)
-					scale(${distTransform.scaleX}, ${distTransform.scaleY})
-				`,
-					opacity: 0
-				}
-			};
-		}
-
-		window.cloneElement = _cloneElement2.default;
-
-		/*window.Morph = class Morph {
-	 	constructor(settings) {
-	 		this.settings = Object.assign({}, defaultSettings, settings);
-	 		// this.ghostElementsBuilder = new GhostElementsBuilder();
-	 	}
-	 
-	 	from(element) {
-	 		this.from = cloneElement(element);
-	 		return this;
-	 	}
-	 
-	 	to(element) {
-	 		this.to = cloneElement(element);
-	 		return this;
-	 	}
-	 
-	 	animate() {
-	 
-	 		document.body.appendChild(this.from);
-	 		document.body.appendChild(this.to);
-	 
-	 		const effect = mix(this.from, this.to);
-	 
-	 		const srcAnimation = {};
-	 		const distAnimation = {};
-	 
-	 		srcAnimation.from = {};
-	 		srcAnimation.to = effect.src;
-	 		Object.keys(effect.src).forEach(cssProp => {
-	 			srcAnimation.from[cssProp] = window.getComputedStyle(this.from).getPropertyValue(cssProp);
-	 		});
-	 
-	 		distAnimation.from = effect.dist;
-	 		distAnimation.to = {};
-	 		Object.keys(effect.dist).forEach(cssProp => {
-	 			distAnimation.to[cssProp] = window.getComputedStyle(this.to).getPropertyValue(cssProp);
-	 		});
-	 
-	 		const animationList = [
-	 			{
-	 				el: this.from,
-	 				from: srcAnimation.from,
-	 				to: srcAnimation.to
-	 			},
-	 			{
-	 				el: this.to,
-	 				from: distAnimation.from,
-	 				to: distAnimation.to
-	 			}
-	 		];
-	 
-	 		animateElements(animationList);
-	 	}
-	 
-	 	setDestinationElement(element, partials) {
-	 
-	 	}
-	 };*/
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
@@ -310,136 +300,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(4), __webpack_require__(6), __webpack_require__(8), __webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _element, _textNode, _element2, _textAreaElement) {
-		'use strict';
-
-		Object.defineProperty(exports, "__esModule", {
-			value: true
-		});
-		exports.default = clone;
-
-		var _textNode2 = _interopRequireDefault(_textNode);
-
-		var _element3 = _interopRequireDefault(_element2);
-
-		var _textAreaElement2 = _interopRequireDefault(_textAreaElement);
-
-		function _interopRequireDefault(obj) {
-			return obj && obj.__esModule ? obj : {
-				default: obj
-			};
-		}
-
-		/*function createPseudoElement(style) {
-	 	const content = style.getPropertyValue('content');
-	 	if (['', 'none', 'normal'].includes(content)) {
-	 		return null;
-	 	}
-	 	return {
-	 		node: document.createElement('span'),
-	 		style: style
-	 	};
-	 }*/
-
-		function parseCssPxValue(value) {
-			return Number(value.replace('px', ''));
-		}
-		// import {stylesToCssText} from './utils/styles';
-		function clone(element) {
-			let i = 0;
-			let css = '';
-
-			function process(element, contextElement) {
-				let cloned = null;
-				const clonedOneLevelElement = (0, _textNode2.default)(element, contextElement) || (0, _textAreaElement2.default)(element, contextElement);
-
-				if (clonedOneLevelElement) {
-					cloned = clonedOneLevelElement;
-				} else {
-					const clonedDeepElement = (0, _element3.default)(element, contextElement);
-					if (clonedDeepElement) {
-						Array.from(element.childNodes).forEach(child => {
-							const clonedChild = process(child, clonedDeepElement);
-							if (clonedChild) {
-								clonedDeepElement.element.appendChild(clonedChild);
-							}
-						});
-						cloned = clonedDeepElement;
-					}
-				}
-
-				if (!cloned) {
-					return null;
-				}
-
-				if (cloned.computedStyle) {
-					(0, _element.setStyles)(cloned.element, cloned.computedStyle.cssText);
-				}
-
-				let styles = {
-					width: cloned.clientRect.width + 'px',
-					height: cloned.clientRect.height + 'px',
-					boxSizing: 'border-box',
-					margin: 0
-				};
-
-				let position;
-				let left = cloned.clientRect.left;
-				let top = cloned.clientRect.top;
-
-				if (contextElement) {
-					position = 'absolute';
-					left -= contextElement.clientRect.left - contextElement.element.clientLeft;
-					top -= contextElement.clientRect.top - contextElement.element.clientTop;
-
-					if (contextElement.computedStyle) {
-						left -= parseCssPxValue(contextElement.computedStyle.borderLeftWidth);
-						top -= parseCssPxValue(contextElement.computedStyle.borderTopWidth);
-					}
-				} else {
-					position = 'fixed';
-					left += 300;
-				}
-
-				Object.assign(styles, {
-					position,
-					left: left + 'px',
-					top: top + 'px'
-				});
-
-				(0, _element.setStyles)(cloned.element, styles);
-
-				if (cloned.styles) {
-					(0, _element.setStyles)(cloned.element, cloned.styles);
-				}
-
-				/*const className = `morph-el-${i}`;
-	   css += `
-	   	.${className} {
-	   		${cloned.css}
-	   	}
-	   `;
-	   i ++;
-	   cloned.node.className = className;*/
-				return cloned.element;
-			}
-
-			let cloned = process(element, null);
-
-			/*const style = document.createElement('style');
-	  style.textContent = css;
-	  	process_.appendChild(style);*/
-
-			// console.log(cloned);
-
-			return cloned;
-		}
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
+/* 5 */,
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -607,6 +468,136 @@
 			return new Promise((resolve, reject) => {
 				player.onfinish = resolve;
 			});
+		}
+	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(4), __webpack_require__(6), __webpack_require__(8), __webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _element, _textNode, _element2, _textAreaElement) {
+		'use strict';
+
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+		exports.default = clone;
+
+		var _textNode2 = _interopRequireDefault(_textNode);
+
+		var _element3 = _interopRequireDefault(_element2);
+
+		var _textAreaElement2 = _interopRequireDefault(_textAreaElement);
+
+		function _interopRequireDefault(obj) {
+			return obj && obj.__esModule ? obj : {
+				default: obj
+			};
+		}
+
+		/*function createPseudoElement(style) {
+	 	const content = style.getPropertyValue('content');
+	 	if (['', 'none', 'normal'].includes(content)) {
+	 		return null;
+	 	}
+	 	return {
+	 		node: document.createElement('span'),
+	 		style: style
+	 	};
+	 }*/
+
+		function parseCssPxValue(value) {
+			return Number(value.replace('px', ''));
+		}
+		// import {stylesToCssText} from './utils/styles';
+		function clone(element) {
+			let i = 0;
+			let css = '';
+
+			function process(element, contextElement) {
+				let cloned = null;
+				const clonedOneLevelElement = (0, _textNode2.default)(element, contextElement) || (0, _textAreaElement2.default)(element, contextElement);
+
+				if (clonedOneLevelElement) {
+					cloned = clonedOneLevelElement;
+				} else {
+					const clonedDeepElement = (0, _element3.default)(element, contextElement);
+					if (clonedDeepElement) {
+						Array.from(element.childNodes).forEach(child => {
+							const clonedChild = process(child, clonedDeepElement);
+							if (clonedChild) {
+								clonedDeepElement.element.appendChild(clonedChild);
+							}
+						});
+						cloned = clonedDeepElement;
+					}
+				}
+
+				if (!cloned) {
+					return null;
+				}
+
+				if (cloned.computedStyle) {
+					(0, _element.setStyles)(cloned.element, cloned.computedStyle.cssText);
+				}
+
+				let styles = {
+					width: cloned.clientRect.width + 'px',
+					height: cloned.clientRect.height + 'px',
+					boxSizing: 'border-box',
+					margin: 0
+				};
+
+				let position;
+				let left = cloned.clientRect.left;
+				let top = cloned.clientRect.top;
+
+				if (contextElement) {
+					position = 'absolute';
+					left -= contextElement.clientRect.left - contextElement.element.clientLeft;
+					top -= contextElement.clientRect.top - contextElement.element.clientTop;
+
+					if (contextElement.computedStyle) {
+						left -= parseCssPxValue(contextElement.computedStyle.borderLeftWidth);
+						top -= parseCssPxValue(contextElement.computedStyle.borderTopWidth);
+					}
+				} else {
+					position = 'fixed';
+					left += 300;
+				}
+
+				Object.assign(styles, {
+					position,
+					left: left + 'px',
+					top: top + 'px'
+				});
+
+				(0, _element.setStyles)(cloned.element, styles);
+
+				if (cloned.styles) {
+					(0, _element.setStyles)(cloned.element, cloned.styles);
+				}
+
+				/*const className = `morph-el-${i}`;
+	   css += `
+	   	.${className} {
+	   		${cloned.css}
+	   	}
+	   `;
+	   i ++;
+	   cloned.node.className = className;*/
+				return cloned.element;
+			}
+
+			let cloned = process(element, null);
+
+			/*const style = document.createElement('style');
+	  style.textContent = css;
+	  	process_.appendChild(style);*/
+
+			// console.log(cloned);
+
+			return cloned;
 		}
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
