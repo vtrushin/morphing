@@ -34,18 +34,15 @@ function createPseudoElement(style) {
 		return null;
 	}
 
-	return createElement('span', {
-		style: style
-	});
+	return createElement('span', { style });
 }
 
-function cloneElement(element, excludedElements = new Set(), parent) {
+export function cloneElement(element, excludedElements = new Set(), parent) {
 	const clientRect = element.getBoundingClientRect();
 	const cloned = element.cloneNode(false);
 	const style = window.getComputedStyle(element);
 	const before = createPseudoElement(window.getComputedStyle(element, '::before'));
 	const after = createPseudoElement(window.getComputedStyle(element, '::after'));
-	const { cssText } = style;
 
 	if (element.className) {
 		cloned.dataset.class = element.className;
@@ -53,7 +50,7 @@ function cloneElement(element, excludedElements = new Set(), parent) {
 
 	removeAttributes(cloned, ['id', 'class']);
 
-	cloned.style = cssText;
+	cloned.style = style.cssText;
 
 	// Save scroll position
 	if (['auto', 'scroll'].includes(style.overflow)) {
@@ -125,7 +122,7 @@ function cloneElement(element, excludedElements = new Set(), parent) {
 		top = clientRect.top;
 	}
 
-	console.log(element, left);
+	// console.log(element, left);
 
 	setStyles(cloned, {
 		position: parent ? 'absolute' : 'fixed',

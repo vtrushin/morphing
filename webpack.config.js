@@ -1,21 +1,33 @@
-var path = require('path');
+const path = require('path');
 
 module.exports = {
-	entry: [
-		'./src/polyfills/array-from.js',
-		'./src/polyfills/object-assign.js',
-		'./src/index.js'
-	],
 	output: {
 		filename: 'bundle.js',
-		path: path.resolve(__dirname, 'dist')
+		path: path.resolve(__dirname)
 	},
 	module: {
-		loaders: [
+		rules: [
 			{
-				test: [/\.js$/],
-				exclude: 'node_modules',
-				loader: 'babel-loader'
+				test: /\.js$/,
+				exclude: /node_modules/,
+				use: {
+					loader: 'babel-loader'
+				}
+			},
+			{
+				test: /\.css$/,
+				use: [
+					{
+						loader: 'style-loader'
+					},
+					{
+						loader: 'css-loader',
+						options: {
+							modules: true,
+							localIdentName: "[name]_[local]_[hash:base64]"
+						}
+					}
+				]
 			}
 		],
 	}
